@@ -1,0 +1,61 @@
+{
+  "name": "vue-uganttastic",
+  "version": "0.0.7",
+  "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
+  "keywords": [
+    "gantt",
+    "chart",
+    "bar",
+    "diagram",
+    "vue",
+    "vuejs"
+  ],
+  "homepage": "https://github.com/solodyagin/vue-uganttastic#readme",
+  "bugs": {
+    "url": "https://github.com/solodyagin/vue-uganttastic/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Marko Zunic",
+    "email": "marko.zunic06@gmail.com",
+    "url": "https://github.com/InfectoOne"
+  },
+  "contributors": [
+    {
+      "name": "Yicone Wong",
+      "url": "https://github.com/yicone"
+    },
+    {
+      "name": "Sergey Solodyagin",
+      "url": "https://github.com/solodyagin"
+    }
+  ],
+  "files": [
+    "dist/vue-uganttastic.*"
+  ],
+  "main": "dist/vue-uganttastic.common.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solodyagin/vue-uganttastic.git"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "demo:build": "vue-cli-service build",
+    "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.15",
+    "@vue/cli-plugin-eslint": "~4.5.15",
+    "@vue/cli-service": "~4.5.15",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^8.1.1",
+    "sass": "^1.44.0",
+    "sass-loader": "^10.2.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
