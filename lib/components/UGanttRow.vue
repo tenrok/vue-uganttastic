@@ -12,6 +12,7 @@
       @dragover="onDragover($event)"
       @dragleave="onDragleave($event)"
       @drop="onDrop($event)"
+      @click.self="$emit('click', $event)"
       @dblclick.self="onDoubleClick($event)"
       @mouseover="onMouseover()"
       @mouseleave="onMouseleave()"
@@ -136,20 +137,22 @@ export default {
     },
 
     onDoubleClick(e) {
-      if (!this.chartProps.allowAdd) return
-      const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
-      const xPos = e.clientX - barsContainer.left
-      const timeDiffFromStart = Math.floor((xPos / barsContainer.width) * this.allUnits.length)
-      const time = timeDiffFromStart
-      let bar = {}
-      bar[this.chartProps.barStartKey] = this.globToText(time, 'start')
-      bar[this.chartProps.barEndKey] = this.globToText(time + this.defaultBarLength, 'end')
-      bar[this.barConfigKey] = { handles: true }
-      this.localBars.push(bar)
-      this.localBars.sort(
-        (first, second) =>
-          this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey])
-      )
+      if (this.chartProps.allowAdd) {
+        const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
+        const xPos = e.clientX - barsContainer.left
+        const timeDiffFromStart = Math.floor((xPos / barsContainer.width) * this.allUnits.length)
+        const time = timeDiffFromStart
+        let bar = {}
+        bar[this.chartProps.barStartKey] = this.globToText(time, 'start')
+        bar[this.chartProps.barEndKey] = this.globToText(time + this.defaultBarLength, 'end')
+        bar[this.barConfigKey] = { handles: true }
+        this.localBars.push(bar)
+        this.localBars.sort(
+          (first, second) =>
+            this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey])
+        )
+      }
+      this.$emit('dblclick', e)
     },
 
     onMouseover() {
