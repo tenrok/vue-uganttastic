@@ -77,7 +77,7 @@
   align-items: flex-end;
   justify-content: space-between;
   background: $ternary;
-  padding-top: 2px;
+  padding-top: 1px;
   color: $text;
 }
 
@@ -164,7 +164,7 @@
   position: sticky;
   padding: 0 10px;
   box-sizing: border-box;
-  border-top: 1px solid $row-label-border-color;
+  // border-top: 1px solid $row-label-border-color;
   border-bottom: 1px solid $row-label-border-color;
 
   & > * {
@@ -176,7 +176,7 @@
 
 .u-gantt-row__bars-container {
   position: relative;
-  border-top: 1px solid $border-color;
+  // border-top: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
   flex: 1;
 }
