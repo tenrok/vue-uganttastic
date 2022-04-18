@@ -318,10 +318,9 @@ export default {
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
+
       this.offsetY = e.clientY-this.barsContainer.top-this.cursorOffsetY
-      
-      //console.log()
-      //this.allBarsInRow.splice(this.allBarsInRow.findIndex(bar=>bar==this.localBar),1)
+
       if (this.isPosOutOfDragRange(newXStart, newXEnd)) {
         return
       }
@@ -337,7 +336,8 @@ export default {
       if (!chart) return
       let newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newStart = this.mapPositionToGlob(newXStart)
-      if (this.barEndGlob - newStart < 1 || this.isPosOutOfDragRange(newXStart, null)) {
+      console.log(this.barEndGlob - newStart)
+      if (this.barEndGlob - newStart <this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(newXStart, null)) {
         return
       }
       this.barStartGlob = newStart
@@ -349,7 +349,8 @@ export default {
       if (!chart) return
       let newXEnd = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newEnd = this.mapPositionToGlob(newXEnd)
-      if (newEnd <= this.barStartGlob || this.isPosOutOfDragRange(null, newXEnd)) {
+      console.log(newEnd-this.barStartGlob)
+      if (newEnd - this.barStartGlob<this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(null, newXEnd)) {
         return
       }
       this.barEndGlob = newEnd
