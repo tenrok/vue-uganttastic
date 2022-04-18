@@ -87,11 +87,12 @@ export default {
 
   methods: {
     moveBarToOtherRow(gGanttBar,offsetY){
-        let parent =this.getGanttBarChildrenList().filter(childComp=>childComp.localBar===gGanttBar)[0].$parent;
+        let parent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===gGanttBar).$parent;
         let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
         let newRowIndex=ganttRowChildrenList.indexOf(parent)+Math.sign(offsetY)
         if(newRowIndex<ganttRowChildrenList.length&&newRowIndex>=0){
-          parent.localBars.pop(gGanttBar)
+          parent.localBars.sort(function comp(a,b) {if(a===gGanttBar) return 1; else if(b===gGanttBar) return -1; else return 0;})
+          parent.localBars.pop()
           ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar)
         } 
     },

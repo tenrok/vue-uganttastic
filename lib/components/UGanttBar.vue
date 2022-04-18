@@ -320,7 +320,7 @@ export default {
       const newXEnd = newXStart + barWidth
 
       this.offsetY = e.clientY-this.barsContainer.top-this.cursorOffsetY
-
+      
       if (this.isPosOutOfDragRange(newXStart, newXEnd)) {
         return
       }
@@ -336,7 +336,7 @@ export default {
       if (!chart) return
       let newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newStart = this.mapPositionToGlob(newXStart)
-      console.log(this.barEndGlob - newStart)
+      //console.log(this.barEndGlob - newStart)
       if (this.barEndGlob - newStart <this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(newXStart, null)) {
         return
       }
@@ -349,7 +349,7 @@ export default {
       if (!chart) return
       let newXEnd = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newEnd = this.mapPositionToGlob(newXEnd)
-      console.log(newEnd-this.barStartGlob)
+      //console.log(newEnd-this.barStartGlob)
       if (newEnd - this.barStartGlob<this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(null, newXEnd)) {
         return
       }
