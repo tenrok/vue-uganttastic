@@ -82,7 +82,8 @@ export default {
     'onBarEvent',
     'onDragendBar',
     'setDragLimitsOfGanttBar',
-    'textToGlob'
+    'textToGlob',
+     'moveBarToOtherRow'
   ],
 
   data() {
@@ -90,6 +91,7 @@ export default {
       barStartBeforeDrag: null,
       barEndBeforeDrag: null,
       cursorOffsetX: 0,
+      cursorOffsetY:0,
       dragLimitLeft: null,
       dragLimitRight: null,
       isDragging: false,
@@ -97,7 +99,8 @@ export default {
       localBar: this.bar,
       mousemoveCallback: null, // gets initialized when starting to drag, possible values: drag, dragByHandleLeft, dragByHandleRight,
       showTooltip: false,
-      tooltipTimeout: null
+      tooltipTimeout: null,
+      offsetY:0
     }
   },
 
@@ -273,12 +276,19 @@ export default {
 
     initDrag(e) {
       // "e" must be the mousedown event
+      document.body.style.cursor = 'move'
+      //this.barConfig.noTooltip=true;
+
       this.isDragging = true
       this.barStartBeforeDrag = this.textToGlob(this.localBar[this.barStartKey])
       this.barEndBeforeDrag = this.textToGlob(this.localBar[this.barEndKey])
-
+      
       let barX = this.$refs['u-gantt-bar'].getBoundingClientRect().left
+      let barY = this.$refs['u-gantt-bar'].getBoundingClientRect().top
+
       this.cursorOffsetX = e.clientX - barX
+      this.cursorOffsetY = e.clientY - barY
+
       let mousedownType = e.target.className
       switch (mousedownType) {
         case 'u-gantt-bar__handle-left':
@@ -308,11 +318,16 @@ export default {
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
+      this.offsetY = e.clientY-this.barsContainer.top-this.cursorOffsetY
+      
+      //console.log()
+      //this.allBarsInRow.splice(this.allBarsInRow.findIndex(bar=>bar==this.localBar),1)
       if (this.isPosOutOfDragRange(newXStart, newXEnd)) {
         return
       }
       this.barStartGlob = this.mapPositionToGlob(newXStart)
       this.barEndGlob = this.mapPositionToGlob(newXEnd)
+      //this.bar
       this.manageOverlapping()
       this.onBarEvent({ event: e, type: 'drag' }, this)
     },
@@ -395,6 +410,7 @@ export default {
     },
 
     endDrag(e) {
+      //this.barConfig.noTooltip=false;
       let left = false,
         right = false,
         move = false
@@ -410,6 +426,9 @@ export default {
           break
       }
       // console.log('endDrag', { left, right, move })
+      if(Math.abs(this.offsetY)>this.chartProps.rowHeight/2)this.moveBarToOtherRow(this.localBar,this.offsetY)
+
+      this.offsetY=0
       this.isDragging = false
       this.dragLimitLeft = null
       this.dragLimitRight = null

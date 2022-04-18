@@ -85,6 +85,15 @@ export default {
   },
 
   methods: {
+    moveBarToOtherRow(gGanttBar,offsetY){
+        let parent =this.getGanttBarChildrenList().filter(childComp=>childComp.localBar===gGanttBar)[0].$parent;
+        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
+        let newRowIndex=ganttRowChildrenList.indexOf(parent)+Math.sign(offsetY)
+        if(newRowIndex<ganttRowChildrenList.length&&newRowIndex>=0){
+          parent.localBars.pop(gGanttBar)
+          ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar)
+        } 
+    },
     getGanttBarChildrenList() {
       let ganttBarChildren = []
       let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
@@ -373,7 +382,8 @@ export default {
       onBarEvent: (e, ganttBar) => this.onBarEvent(e, ganttBar),
       onDragendBar: (e, ganttBar, action) => this.onDragendBar(e, ganttBar, action),
       setDragLimitsOfGanttBar: ganttBar => this.setDragLimitsOfGanttBar(ganttBar),
-      textToGlob: abbr => this.textToGlob(abbr)
+      textToGlob: abbr => this.textToGlob(abbr),
+      moveBarToOtherRow: (gGanttBar,offsetY)=>this.moveBarToOtherRow(gGanttBar,offsetY)
     }
   }
 }
