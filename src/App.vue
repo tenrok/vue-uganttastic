@@ -8,6 +8,8 @@
       bar-start-key="start"
       bar-end-key="end"
       bar-config-key="config"
+      :bundles='bundles'
+      :globalBundles='globalBundles'
       :no-tooltip="noTooltip"
       :grid="grid"
       :grid-size="gridSize"
@@ -30,6 +32,7 @@
         :label="row.label"
         :label-style="row.labelStyle"
         :row-style="row.style"
+        :threadID="row.threadID"
       >
         <template #bar-label="{ bar }">
           <span>{{ bar.label }}</span>
@@ -69,9 +72,19 @@ export default {
         units: 5
       }
     ],
+    bundles:[
+    {
+      key:'blueBundle',
+      value:'fixed'
+    },
+    {
+      key:'redBundle',
+      value:'relative'
+    }],
     noTooltip: false,
     grid: true,
     gridSize: 30,
+    globalBundles:'fixed',
     isMagnetic: true,
     height: '50vh',
     hideTimeaxis: false,
@@ -82,7 +95,8 @@ export default {
     rowLabelWidth: 200,
     rows: [
       {
-        label: 'Row #1',
+        label: 'Thread 0',
+        
         bars: [
           {
             start: 'group1, 3',
@@ -98,22 +112,19 @@ export default {
           },
           {
             start: 'group2, 2',
-            end: 'group3, 0',
-            label: 'Bar',
+            end: 'group2, 7',
+            label: 'With handles!',
             tooltip: 'Bar tooltip',
             config: {
               color: 'white',
-              backgroundColor: '#2e74a3',
-              bundle: 'blueBundle'
+              backgroundColor: '#a23def',
+              handles: true
             }
           }
         ]
       },
       {
-        label: 'Row #2',
-        labelStyle: {
-          justifyContent: 'end'
-        },
+        label: 'Thread 1',
         bars: [
           {
             start: 'group1, 0',
@@ -129,7 +140,7 @@ export default {
           {
             start: 'group2, 2',
             end: 'group3, 0',
-            label: 'We belong together ^',
+            label: 'Bar',
             tooltip: 'Bar tooltip',
             config: {
               color: 'white',
@@ -147,10 +158,14 @@ export default {
         ],
         style: {
           background: '#ffb0b07f'
-        }
+        },
+        threadID:'1'
       },
       {
-        label: 'Row #3',
+        label: '2/3',
+        labelStyle: {
+          justifyContent: 'end'
+        },
         bars: [
           {
             start: 'group1, 1',
@@ -164,17 +179,6 @@ export default {
             }
           },
           {
-            start: 'group2, 2',
-            end: 'group2, 7',
-            label: 'With handles!',
-            tooltip: 'Bar tooltip',
-            config: {
-              color: 'white',
-              backgroundColor: '#a23def',
-              handles: true
-            }
-          },
-          {
             start: 'group3, 2',
             end: 'group3, 5',
             label: 'Bar',
@@ -185,21 +189,26 @@ export default {
               pushOnOverlap: false,
               zIndex: 2
             }
-          },
+          },          
           {
-            start: 'group4, 2',
-            end: 'group4, 7',
-            label: 'Woooow!',
+            start: 'group2, 2',
+            end: 'group3, 0',
+            label: 'We belong together ^',
             tooltip: 'Bar tooltip',
             config: {
               color: 'white',
-              background: 'repeating-linear-gradient(45deg, #de7359, #de7359 10px, #ffc803 10px, #ffc803 20px)'
+              backgroundColor: '#2e74a3',
+              bundle: 'blueBundle'
             }
-          }
-        ]
+          },
+        ],
+        threadID:'1'
       },
       {
-        label: 'Row #4',
+        label: '3/3',
+        labelStyle: {
+          justifyContent: 'end'
+        },
         bars: [
           {
             start: 'group1, 4',
@@ -223,19 +232,26 @@ export default {
               borderRadius: 0
             }
           }
-        ]
+        ],
+        threadID:'1'
       },
       {
-        label: 'Row #5',
+        label: 'Thread 2',
         bars: [],
         style: {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',
           backgroundSize: '1em 1em'
-        }
+        },
+        threadID:'2'
       },
       {
-        label: 'Row #6',
-        bars: []
+        label: '2/2',
+        labelStyle: {
+          justifyContent: 'end'
+        },
+        bars: [],
+        threadID:'2'
+        
       }
     ],
     theme: 'default',

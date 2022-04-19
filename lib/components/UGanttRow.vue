@@ -48,7 +48,8 @@ export default {
     highlightOnHover: { type: Boolean },
     label: { type: String, default: 'Row' },
     labelStyle: { type: Object },
-    rowStyle: { type: Object }
+    rowStyle: { type: Object },
+    threadID:{type:String,default:'0'}
   },
 
   inject: ['getAllUnits', 'getChartProps', 'globToText', 'textToGlob'],
