@@ -45,6 +45,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vue/cli": "^5.0.4",
     "@vue/cli-service-global": "^4.5.17",
     "vue": "^2.6.12"
   },

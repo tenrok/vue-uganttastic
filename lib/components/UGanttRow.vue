@@ -14,8 +14,9 @@
       @drop="onDrop($event)"
       @click.self="$emit('click', $event)"
       @dblclick.self="onDoubleClick($event)"
-      @mouseover="onMouseover()"
+      @mouseenter="onMouseenter()"
       @mouseleave="onMouseleave()"
+      @mouseout="onMouseout($event)"
     >
       <u-gantt-bar
         v-for="(bar, index) in localBars"
@@ -113,18 +114,21 @@ export default {
 
   methods: {
     onDragover(e) {
-      e.preventDefault() // enables dropping content on row
-      if (this.highlightOnHover) {
+      e.preventDefault()
+      // enables dropping content on row
+      /* if (this.highlightOnHover) {
         this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
-      }
+      } */
     },
 
     onDragleave() {
-      this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
+       console.log(this.data()) 
+      //this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted') 
     },
 
     onDrop(e) {
-      const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
+      
+      /* const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
       const xPos = e.clientX - barsContainer.left
       const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
       const time = timeDiffFromStart
@@ -132,8 +136,9 @@ export default {
         bar =>
           time >= this.textToGlob(bar[this.chartProps.barStartKey]) &&
           time <= this.textToGlob(bar[this.chartProps.barEndKey])
-      )
-      this.$emit('drop', { event: e, bar, time })
+      ) */
+      /* this.$emit('drop', { event: e, bar, time }) */
+      console.log(e)
     },
 
     onDoubleClick(e) {
@@ -155,7 +160,7 @@ export default {
       this.$emit('dblclick', e)
     },
 
-    onMouseover() {
+    onMouseenter() {
       if (this.highlightOnHover) {
         this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
       }
@@ -164,7 +169,11 @@ export default {
     onMouseleave() {
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     },
-
+    onMouseout(e) {
+      if(e.relatedTarget!==null){
+        e.relatedTarget.classList.contains('u-gantt-bar__tooltip')?this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted'):NaN 
+      }
+    },
     onWindowResize() {
       // re-initialize the barsContainer DOMRect variable, which will trigger re-rendering in the gantt bars
       if (this.$refs['bars-container']) {
