@@ -427,7 +427,7 @@ export default {
           break
       }
       // console.log('endDrag', { left, right, move })
-      if(Math.abs(this.offsetY)>this.chartProps.rowHeight/2)this.moveBarToOtherRow(this.localBar,this.offsetY)
+      if(Math.abs(this.offsetY)>this.chartProps.rowHeight/2)this.moveBarToOtherRow(this.localBar,e,this.isMainBarOfDrag)
 
       this.offsetY=0
       this.isDragging = false

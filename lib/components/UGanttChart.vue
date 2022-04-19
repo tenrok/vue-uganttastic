@@ -65,7 +65,8 @@ export default {
 
   data: () => ({
     movedBarsInDrag: new Set(),
-    timemarkerOffset: 0
+    timemarkerOffset: 0,
+    rowOffset:0
   }),
 
   computed: {
@@ -86,15 +87,36 @@ export default {
   },
 
   methods: {
-    moveBarToOtherRow(gGanttBar,offsetY){
+    moveBarToOtherRow(gGanttBar,e,isMainBarOfDrag){
         let parent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===gGanttBar).$parent;
-        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
-        let newRowIndex=ganttRowChildrenList.indexOf(parent)+Math.sign(offsetY)
-        if(newRowIndex<ganttRowChildrenList.length&&newRowIndex>=0){
+        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)     
+        if(isMainBarOfDrag){
+          this.rowOffset=0
+          let selectedRow=ganttRowChildrenList.find(el=>el.$refs['u-gantt-row'].getBoundingClientRect().top<e.clientY
+          &&el.$refs['u-gantt-row'].getBoundingClientRect().left<e.clientX
+          &&el.$refs['u-gantt-row'].getBoundingClientRect().top+el.$refs['u-gantt-row'].getBoundingClientRect().height>e.clientY
+          &&el.$refs['u-gantt-row'].getBoundingClientRect().left+el.$refs['u-gantt-row'].getBoundingClientRect().width>e.clientX)
+          //defining row that contains cursor
+          if(selectedRow===undefined)return
+          this.rowOffset=ganttRowChildrenList.findIndex(el=>el===selectedRow)-ganttRowChildrenList.findIndex(el=>el===parent);
+           //computing common row offset 
+          let confirmBarsRowMoving=Array.from(this.movedBarsInDrag).every(bar=>{
+            let barParent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===bar).$parent;
+            let barNewRowIndex=ganttRowChildrenList.findIndex(el=>el===barParent)+this.rowOffset
+            if(barNewRowIndex<ganttRowChildrenList.length&&barNewRowIndex>=0) return true
+            else return false 
+          })
+          //check every child on out of range
+          this.rowOffset=confirmBarsRowMoving?this.rowOffset:0
+          //approving value
+        }
+        if(this.rowOffset!==0){
+          let newRowIndex=ganttRowChildrenList.findIndex(el=>el===parent)+this.rowOffset
           parent.localBars.sort(function comp(a,b) {if(a===gGanttBar) return 1; else if(b===gGanttBar) return -1; else return 0;})
           parent.localBars.pop()
           ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar)
-        } 
+        }
+        //finally shifting
     },
     getGanttBarChildrenList() {
       let ganttBarChildren = []
@@ -385,7 +407,7 @@ export default {
       onDragendBar: (e, ganttBar, action) => this.onDragendBar(e, ganttBar, action),
       setDragLimitsOfGanttBar: ganttBar => this.setDragLimitsOfGanttBar(ganttBar),
       textToGlob: abbr => this.textToGlob(abbr),
-      moveBarToOtherRow: (gGanttBar,offsetY)=>this.moveBarToOtherRow(gGanttBar,offsetY)
+      moveBarToOtherRow: (gGanttBar,e,isMainBarOfDrag)=>this.moveBarToOtherRow(gGanttBar,e,isMainBarOfDrag)
     }
   }
 }
