@@ -26,7 +26,7 @@
 
     <transition name="fade" mode="out-in">
       <div
-        v-if="!noTooltip && !barConfig.noTooltip && (showTooltip || isDragging)"
+        v-if="!noTooltip && !barConfig.noTooltip && showTooltip"
         class="u-gantt-bar__tooltip"
         :style="tooltipStyle"
       >

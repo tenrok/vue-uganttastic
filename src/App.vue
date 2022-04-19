@@ -12,7 +12,7 @@
       :grid="grid"
       :grid-size="gridSize"
       :highlighted="highlighted"
-      :is-magnetic="false"
+      :is-magnetic="isMagnetic"
       :height="height"
       :hide-timeaxis="hideTimeaxis"
       :push-on-overlap="pushOnOverlap"
