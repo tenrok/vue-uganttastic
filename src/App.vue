@@ -48,27 +48,27 @@ export default {
     axis: [
       {
         key: 'group1',
-        label: 'Group #1',
+        label: 'пн 18 апреля',
         units: 8
       },
       {
         key: 'group2',
-        label: 'Group #2',
+        label: 'вт 19 апреля',
         units: 8
       },
       {
         key: 'group3',
-        label: 'Group #3',
+        label: 'ср 20 апреля',
         units: 8
       },
       {
         key: 'group4',
-        label: 'Group #4',
+        label: 'чт 21 апреля',
         units: 8
       },
       {
         key: 'group5',
-        label: 'Group #5',
+        label: 'пт 22 апреля',
         units: 5
       }
     ],
@@ -90,12 +90,12 @@ export default {
     hideTimeaxis: false,
     highlightOnHover: true,
     highlighted: [0],
-    pushOnOverlap: true,
+    pushOnOverlap: false,
     rowHeight: 40,
     rowLabelWidth: 200,
     rows: [
       {
-        label: 'Thread 0',
+        label: 'Group 0',
         
         bars: [
           {
@@ -124,7 +124,7 @@ export default {
         ]
       },
       {
-        label: 'Thread 1',
+        label: 'Group 1',
         bars: [
           {
             start: 'group1, 0',
@@ -156,9 +156,6 @@ export default {
             config: { color: 'white', backgroundColor: '#aa34a3' }
           }
         ],
-        style: {
-          background: '#ffb0b07f'
-        },
         threadID:'1'
       },
       {
@@ -236,7 +233,7 @@ export default {
         threadID:'1'
       },
       {
-        label: 'Thread 2',
+        label: 'Group 2',
         bars: [],
         style: {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',

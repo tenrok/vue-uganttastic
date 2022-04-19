@@ -41,6 +41,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --open",
     "demo:build": "vue-cli-service build",
+    "demo:buildAndDeploy": "vue-cli-service build deploy.bat",
     "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js",
     "lint": "vue-cli-service lint"
   },
