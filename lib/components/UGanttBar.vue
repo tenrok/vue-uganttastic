@@ -337,7 +337,7 @@ export default {
       let newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newStart = this.mapPositionToGlob(newXStart)
       //console.log(this.barEndGlob - newStart)
-      if (this.barEndGlob - newStart <this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(newXStart, null)) {
+      if (this.barEndGlob - newStart <this.chartProps.defaultBarLength || this.isPosOutOfDragRange(newXStart, null)) {
         return
       }
       this.barStartGlob = newStart
@@ -350,7 +350,7 @@ export default {
       let newXEnd = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newEnd = this.mapPositionToGlob(newXEnd)
       //console.log(newEnd-this.barStartGlob)
-      if (newEnd - this.barStartGlob<this.chartProps.minBarUnitWidth || this.isPosOutOfDragRange(null, newXEnd)) {
+      if (newEnd - this.barStartGlob<this.chartProps.defaultBarLength || this.isPosOutOfDragRange(null, newXEnd)) {
         return
       }
       this.barEndGlob = newEnd

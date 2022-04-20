@@ -54,7 +54,6 @@ export default {
     highlighted: { type: Array, default: () => [] },
     isMagnetic: { type: Boolean },
     minGapBetweenBars: { type: Number, default: 0 },
-    minBarUnitWidth:{type:Number,default:1},
     noTooltip: { type: Boolean, default: false },
     pushOnOverlap: { type: Boolean },
     rowHeight: { type: Number, default: 40 },
