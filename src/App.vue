@@ -176,18 +176,6 @@ export default {
             }
           },
           {
-            start: 'group3, 2',
-            end: 'group3, 5',
-            label: 'Bar',
-            tooltip: 'Bar tooltip',
-            config: {
-              color: 'white',
-              backgroundColor: '#5effad',
-              pushOnOverlap: false,
-              zIndex: 2
-            }
-          },          
-          {
             start: 'group2, 2',
             end: 'group3, 0',
             label: 'We belong together ^',
@@ -198,6 +186,18 @@ export default {
               bundle: 'blueBundle'
             }
           },
+          {
+            start: 'group3, 2',
+            end: 'group3, 5',
+            label: 'Bar',
+            tooltip: 'Bar tooltip',
+            config: {
+              color: 'white',
+              backgroundColor: '#5effad',
+              pushOnOverlap: false,
+              zIndex: 2
+            }
+          }          
         ],
         threadID:'1'
       },

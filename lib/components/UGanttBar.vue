@@ -83,7 +83,9 @@ export default {
     'onDragendBar',
     'setDragLimitsOfGanttBar',
     'textToGlob',
-     'moveBarToOtherRow'
+     'moveBarToOtherRow',
+     'getMovedBars',
+     'checkBarMoving'
   ],
 
   data() {
@@ -105,6 +107,9 @@ export default {
   },
 
   computed: {
+    movedBars(){
+      return this.getMovedBars()
+    },
     allUnits() {
       return this.getAllUnits()
     },
@@ -319,8 +324,8 @@ export default {
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
 
-      this.offsetY = e.clientY-this.barsContainer.top-this.cursorOffsetY
-      
+      if(this.isMainBarOfDrag)
+        document.body.style.cursor=this.checkBarMoving(this,e)
       if (this.isPosOutOfDragRange(newXStart, newXEnd)) {
         return
       }
@@ -426,9 +431,11 @@ export default {
           move = true
           break
       }
-      // console.log('endDrag', { left, right, move })
-      if(Math.abs(this.offsetY)>this.chartProps.rowHeight/2)this.moveBarToOtherRow(this.localBar,e,this.isMainBarOfDrag)
-
+       //console.log('endDrag', { left, right, move })
+       //console.log(Array.from(this.movedBars.values()))
+      //if(Array.from(this.movedBars.values()).includes(this.bar))
+      this.moveBarToOtherRow(this,e)
+      
       this.offsetY=0
       this.isDragging = false
       this.dragLimitLeft = null

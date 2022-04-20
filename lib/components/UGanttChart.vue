@@ -88,12 +88,12 @@ export default {
   },
 
   methods: {
-    moveBarToOtherRow(gGanttBar,e,isMainBarOfDrag){
+    checkBarMoving(gGanttBar,e){
         let isFixed=true
-        if(gGanttBar.config.bundle!==undefined){
+        if(gGanttBar.barConfig.bundle!==undefined){
           let type;
           if(this.bundles.length!==0){
-            type=this.bundles.find(bundle=>bundle.key===gGanttBar.config.bundle).value
+            type=this.bundles.find(bundle=>bundle.key===gGanttBar.barConfig.bundle).value
           }
           if(type===undefined){
             type=this.globalBundles
@@ -109,9 +109,67 @@ export default {
         }
         //bundleRelation type defining
 
-        let parent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===gGanttBar).$parent;
-        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)     
-        if(isMainBarOfDrag){
+        let parent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===gGanttBar.localBar).$parent;
+        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)  
+        this.rowOffset=0
+        let selectedRow=ganttRowChildrenList.find(el=>el.$refs['u-gantt-row'].getBoundingClientRect().top<e.clientY
+        &&el.$refs['u-gantt-row'].getBoundingClientRect().left<e.clientX
+        &&el.$refs['u-gantt-row'].getBoundingClientRect().top+el.$refs['u-gantt-row'].getBoundingClientRect().height>e.clientY
+        &&el.$refs['u-gantt-row'].getBoundingClientRect().left+el.$refs['u-gantt-row'].getBoundingClientRect().width>e.clientX)
+        //defining row that contains cursor
+        if(selectedRow===undefined)return 'not-allow'
+        
+        this.rowOffset=ganttRowChildrenList.findIndex(el=>el===selectedRow)-ganttRowChildrenList.findIndex(el=>el===parent);
+        
+          //computing common row offset 
+          if(isFixed){
+                let confirmBarsRowMoving  = Array.from(this.movedBarsInDrag.values()).every(bar=>{
+                let barParent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===bar).$parent;
+                let barNewRowIndex=ganttRowChildrenList.findIndex(el=>el===barParent)+this.rowOffset
+                if(barNewRowIndex<ganttRowChildrenList.length&&barNewRowIndex>=0&&barParent.threadID===ganttRowChildrenList[barNewRowIndex].threadID) return true
+                else return false 
+              })
+              if(confirmBarsRowMoving)return 'grabbing'
+              //approving value if fixed
+          }
+          else{
+            let confirmBarsRowMoving = Array.from(this.movedBarsInDrag).every(bar=>{
+                let barParent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===bar).$parent;
+                if(barParent!==selectedRow)return true;
+                else return false;
+            })
+            if(confirmBarsRowMoving&&selectedRow.threadID===parent.threadID){
+                return 'grabbing'
+            }
+          }
+        return 'not-allowed'
+        //finally shifting case fixed
+    },
+    moveBarToOtherRow(gGanttBar,e){
+        let isFixed=true
+        if(gGanttBar.barConfig.bundle!==undefined){
+          let type;
+          if(this.bundles.length!==0){
+            type=this.bundles.find(bundle=>bundle.key===gGanttBar.barConfig.bundle).value
+          }
+          if(type===undefined){
+            type=this.globalBundles
+          }
+          switch (type){
+            case 'fixed':
+              isFixed=true;
+              break;
+            case 'relative':
+              isFixed=false;
+              break; 
+          }
+        }
+        //bundleRelation type defining
+
+        let parent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===gGanttBar.localBar).$parent;
+        let ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)  
+        console.log(gGanttBar.$props)
+        if(gGanttBar.isMainBarOfDrag){
           this.rowOffset=0
           let selectedRow=ganttRowChildrenList.find(el=>el.$refs['u-gantt-row'].getBoundingClientRect().top<e.clientY
           &&el.$refs['u-gantt-row'].getBoundingClientRect().left<e.clientX
@@ -121,9 +179,10 @@ export default {
           if(selectedRow===undefined)return
           
           this.rowOffset=ganttRowChildrenList.findIndex(el=>el===selectedRow)-ganttRowChildrenList.findIndex(el=>el===parent);
+          
            //computing common row offset 
             if(isFixed){
-                  let confirmBarsRowMoving  = Array.from(this.movedBarsInDrag).every(bar=>{
+                  let confirmBarsRowMoving  = Array.from(this.movedBarsInDrag.values()).every(bar=>{
                   let barParent =this.getGanttBarChildrenList().find(childComp=>childComp.localBar===bar).$parent;
                   let barNewRowIndex=ganttRowChildrenList.findIndex(el=>el===barParent)+this.rowOffset
                   if(barNewRowIndex<ganttRowChildrenList.length&&barNewRowIndex>=0&&barParent.threadID===ganttRowChildrenList[barNewRowIndex].threadID) return true
@@ -138,31 +197,26 @@ export default {
                  if(barParent!==selectedRow)return true;
                  else return false;
               })
-              console.log(confirmBarsRowMoving)
               if(confirmBarsRowMoving&&selectedRow.threadID===parent.threadID){
-                  let newRowIndex=ganttRowChildrenList.findIndex(el=>el===parent)+this.rowOffset
-                  parent.localBars.sort(function comp(a,b) {if(a===gGanttBar) return 1; else if(b===gGanttBar) return -1; else return 0;})
-                  parent.localBars.pop()
-                  ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar)
-                  ganttRowChildrenList[newRowIndex].localBars.sort(
-                  (first, second) =>
-                    this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey])
-                  )
+                  this.invokeBarTransition(gGanttBar.bar,ganttRowChildrenList,parent)
                   return
               }
             }
         }
         if(this.rowOffset!==0&&isFixed){
-          let newRowIndex=ganttRowChildrenList.findIndex(el=>el===parent)+this.rowOffset
-          parent.localBars.sort(function comp(a,b) {if(a===gGanttBar) return 1; else if(b===gGanttBar) return -1; else return 0;})
+          this.invokeBarTransition(gGanttBar.bar,ganttRowChildrenList,parent)
+        }
+        //finally shifting case fixed
+    },
+    invokeBarTransition(gGanttLocalBar,ganttRowChildrenList,parent){ //bar to move, row-array, bar-parent; new-row computes by this.rowOffset
+      let newRowIndex=ganttRowChildrenList.findIndex(el=>el===parent)+this.rowOffset
+          parent.localBars.sort(function comp(a,b) {if(a===gGanttLocalBar) return 1; else if(b===gGanttLocalBar) return -1; else return 0;})
           parent.localBars.pop()
-          ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar)
+          ganttRowChildrenList[newRowIndex].localBars.push(gGanttLocalBar)
           ganttRowChildrenList[newRowIndex].localBars.sort(
           (first, second) =>
             this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey])
           )
-        }
-        //finally shifting case fixed
     },
     getGanttBarChildrenList() {
       let ganttBarChildren = []
@@ -182,6 +236,7 @@ export default {
     },
 
     initDragOfBarsFromBundle(gGanttBar, e) {
+      this.movedBarsInDrag=new Set()
       gGanttBar.initDrag(e)
       this.movedBarsInDrag.add(gGanttBar.bar)
       if (gGanttBar.barConfig.bundle !== null && gGanttBar.barConfig.bundle !== undefined) {
@@ -262,7 +317,7 @@ export default {
         })
       }
 
-      this.movedBarsInDrag = new Set()
+      //this.movedBarsInDrag = new Set()
       this.$emit('dragend-bar', { event: e, bar: ganttBar.bar, movedBars })
     },
 
@@ -445,6 +500,7 @@ export default {
     return {
       getAllUnits: () => this.allUnits,
       getChartProps: () => this.$props,
+      getMovedBars:()=>this.movedBarsInDrag,
       globToText: (glob, edge) => this.globToText(glob, edge),
       initDragOfBarsFromBundle: (bundleId, e) => this.initDragOfBarsFromBundle(bundleId, e),
       moveBarsFromBundleOfPushedBar: (bar, diff, overlapType) =>
@@ -453,7 +509,8 @@ export default {
       onDragendBar: (e, ganttBar, action) => this.onDragendBar(e, ganttBar, action),
       setDragLimitsOfGanttBar: ganttBar => this.setDragLimitsOfGanttBar(ganttBar),
       textToGlob: abbr => this.textToGlob(abbr),
-      moveBarToOtherRow: (gGanttBar,e,isMainBarOfDrag)=>this.moveBarToOtherRow(gGanttBar,e,isMainBarOfDrag)
+      moveBarToOtherRow: (gGanttBar,e)=>this.moveBarToOtherRow(gGanttBar,e),
+      checkBarMoving:(gGanttBar,e)=>this.checkBarMoving(gGanttBar,e)
     }
   }
 }
