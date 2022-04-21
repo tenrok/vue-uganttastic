@@ -25,11 +25,7 @@
     </div>
 
     <transition name="fade" mode="out-in">
-      <div
-        v-if="!noTooltip && !barConfig.noTooltip && showTooltip"
-        class="u-gantt-bar__tooltip"
-        :style="tooltipStyle"
-      >
+      <div v-if="!noTooltip && !barConfig.noTooltip && showTooltip" class="u-gantt-bar__tooltip" :style="tooltipStyle">
         <div
           class="color-indicator"
           :style="{
@@ -83,9 +79,9 @@ export default {
     'onDragendBar',
     'setDragLimitsOfGanttBar',
     'textToGlob',
-     'moveBarToOtherRow',
-     'getMovedBars',
-     'checkBarMoving'
+    'moveBarToOtherRow',
+    'getMovedBars',
+    'checkBarMoving'
   ],
 
   data() {
@@ -93,7 +89,7 @@ export default {
       barStartBeforeDrag: null,
       barEndBeforeDrag: null,
       cursorOffsetX: 0,
-      cursorOffsetY:0,
+      cursorOffsetY: 0,
       dragLimitLeft: null,
       dragLimitRight: null,
       isDragging: false,
@@ -102,20 +98,20 @@ export default {
       mousemoveCallback: null, // gets initialized when starting to drag, possible values: drag, dragByHandleLeft, dragByHandleRight,
       showTooltip: false,
       tooltipTimeout: null,
-      offsetY:0,
-      phantomMode:false,
-      phantomCursorType:'grabbing',
-      phantomNewStart:null,
-      phantomNewEnd:null,
-      phantomChild:false,
-      bundleBars:null,
-      cursorX:0,
-      cursorY:0
+      offsetY: 0,
+      phantomMode: false,
+      phantomCursorType: 'grabbing',
+      phantomNewStart: null,
+      phantomNewEnd: null,
+      phantomChild: false,
+      bundleBars: null,
+      cursorX: 0,
+      cursorY: 0
     }
   },
 
   computed: {
-    movedBars(){
+    movedBars() {
       return this.getMovedBars()
     },
     allUnits() {
@@ -193,7 +189,7 @@ export default {
     },
 
     barStyle() {
-      if(!this.phantomMode){
+      if (!this.phantomMode) {
         if (!this.barsContainer.width) return
         const xStart = this.mapGlobToPosition(this.barStartGlob)
         const xEnd = this.mapGlobToPosition(this.barEndGlob)
@@ -204,8 +200,7 @@ export default {
           height: `${this.chartProps.rowHeight - 6}px`,
           zIndex: this.barConfig.zIndex || (this.isDragging ? 2 : 1)
         }
-      }
-      else{
+      } else {
         if (!this.barsContainer.width) return
         const xStart = this.mapGlobToPosition(this.barStartGlob)
         const xEnd = this.mapGlobToPosition(this.barEndGlob)
@@ -214,11 +209,11 @@ export default {
           left: `${this.cursorX}px`,
           width: `${xEnd - xStart}px`,
           height: `${this.chartProps.rowHeight - 6}px`,
-          top:`${this.cursorY}px`,
-          position:'absolute',
-          opacity:.7,
+          top: `${this.cursorY}px`,
+          position: 'absolute',
+          opacity: 0.7,
           zIndex: 100,
-          cursor:this.phantomCursorType
+          cursor: this.phantomCursorType
         }
       }
     },
@@ -245,7 +240,7 @@ export default {
     }
   },
 
-  methods: {  
+  methods: {
     onMouseenter(e) {
       if (!this.noTooltip) {
         if (this.tooltipTimeout) {
@@ -253,7 +248,7 @@ export default {
         }
         this.tooltipTimeout = setTimeout(() => (this.showTooltip = true), 800)
       }
-      if(this.barConfig.immobile)document.body.style.cursor='not-allowed'
+      if (this.barConfig.immobile) document.body.style.cursor = 'not-allowed'
       this.onBarEvent({ event: e, type: e.type }, this)
     },
 
@@ -262,7 +257,7 @@ export default {
         clearTimeout(this.tooltipTimeout)
         this.showTooltip = false
       }
-      if(this.barConfig.immobile)document.body.style.cursor='auto'
+      if (this.barConfig.immobile) document.body.style.cursor = 'auto'
       this.onBarEvent({ event: e, type: e.type }, this)
     },
 
@@ -304,7 +299,7 @@ export default {
       this.isMainBarOfDrag = true
       // this method is injected here by UGanttChart.vue, and calls initDrag()
       // for all UGanttBars that belong to the same bundle as this bar:
-      this.bundleBars=this.initDragOfBarsFromBundle(this, e)
+      this.bundleBars = this.initDragOfBarsFromBundle(this, e)
       console.log(this.bundleBars)
     },
 
@@ -316,15 +311,15 @@ export default {
       this.isDragging = true
       this.barStartBeforeDrag = this.textToGlob(this.localBar[this.barStartKey])
       this.barEndBeforeDrag = this.textToGlob(this.localBar[this.barEndKey])
-      
+
       let barX = this.$refs['u-gantt-bar'].getBoundingClientRect().left
       let barY = this.$refs['u-gantt-bar'].getBoundingClientRect().top
 
       this.cursorOffsetX = e.clientX - barX
       this.cursorOffsetY = e.clientY - barY
 
-      this.cursorX=0
-      this.cursorY=0
+      this.cursorX = 0
+      this.cursorY = 0
 
       let mousedownType = e.target.className
       switch (mousedownType) {
@@ -355,33 +350,35 @@ export default {
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
-      if(!this.phantomMode)this.offsetY=chart.scrollTop+e.clientY-this.barsContainer.top-this.chartProps.rowHeight/2
+      if (!this.phantomMode)
+        this.offsetY = chart.scrollTop + e.clientY - this.barsContainer.top - this.chartProps.rowHeight / 2
 
-      this.cursorX=chart.scrollLeft+e.clientX-this.barsContainer.left-this.cursorOffsetX
-      this.cursorY=chart.scrollTop+e.clientY-this.barsContainer.top-this.cursorOffsetY
-        //console.log(this.cursorX+' '+this.cursorY)
-      if(!this.phantomMode&&this.isMainBarOfDrag&&Math.abs(this.offsetY)>this.chartProps.rowHeight/2){
-        this.phantomMode=true;
-        this.bundleBars.forEach(el=>el.phantomChild=true)
-        this.barConfig.noTooltip=true
-        
+      this.cursorX = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
+      this.cursorY = chart.scrollTop + e.clientY - this.barsContainer.top - this.cursorOffsetY
+      //console.log(this.cursorX+' '+this.cursorY)
+      if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
+        this.phantomMode = true
+        this.bundleBars.forEach(el => (el.phantomChild = true))
+        this.barConfig.noTooltip = true
+
         //document.body.style.cursor=this.checkBarMoving(this,e)
       }
-      if(this.phantomMode){
-        this.phantomCursorType=this.checkBarMoving(this,e)
-        this.phantomNewStart=this.mapPositionToGlob(newXStart)
-        this.phantomNewEnd=this.mapPositionToGlob(newXEnd)
+      if (this.phantomMode) {
+        this.phantomCursorType = this.checkBarMoving(this, e)
+        this.phantomNewStart = this.mapPositionToGlob(newXStart)
+        this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
+        //console.log('New position: '+this.phantomNewStart+' '+this.phantomNewEnd)
         this.onBarEvent({ event: e, type: 'drag' }, this)
         return
       }
       if (this.isPosOutOfDragRange(newXStart, newXEnd)) {
         return
       }
-      
+
       this.barStartGlob = this.mapPositionToGlob(newXStart)
       this.barEndGlob = this.mapPositionToGlob(newXEnd)
       //this.bar
-      this.manageOverlapping()   
+      this.manageOverlapping()
       this.onBarEvent({ event: e, type: 'drag' }, this)
     },
     dragByHandleLeft(e) {
@@ -390,7 +387,7 @@ export default {
       let newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newStart = this.mapPositionToGlob(newXStart)
       //console.log(this.barEndGlob - newStart)
-      if (this.barEndGlob - newStart <this.chartProps.defaultBarLength || this.isPosOutOfDragRange(newXStart, null)) {
+      if (this.barEndGlob - newStart < this.chartProps.defaultBarLength || this.isPosOutOfDragRange(newXStart, null)) {
         return
       }
       this.barStartGlob = newStart
@@ -403,7 +400,7 @@ export default {
       let newXEnd = chart.scrollLeft + e.clientX - this.barsContainer.left
       let newEnd = this.mapPositionToGlob(newXEnd)
       //console.log(newEnd-this.barStartGlob)
-      if (newEnd - this.barStartGlob<this.chartProps.defaultBarLength || this.isPosOutOfDragRange(null, newXEnd)) {
+      if (newEnd - this.barStartGlob < this.chartProps.defaultBarLength || this.isPosOutOfDragRange(null, newXEnd)) {
         return
       }
       this.barEndGlob = newEnd
@@ -479,31 +476,27 @@ export default {
           move = true
           break
       }
-       //console.log('endDrag', { left, right, move })
-       //console.log(Array.from(this.movedBars.values()))
+      //console.log('endDrag', { left, right, move })
+      //console.log(Array.from(this.movedBars.values()))
       //if(Array.from(this.movedBars.values()).includes(this.bar))
-      this.moveBarToOtherRow(this,e)
-      
-      this.offsetY=0
+      console.log(this.isMainBarOfDrag)
+      console.log(this.phantomMode)
+      this.moveBarToOtherRow(this, e)
+
+      this.offsetY = 0
       this.isDragging = false
       this.dragLimitLeft = null
       this.dragLimitRight = null
       document.body.style.cursor = 'auto'
       window.removeEventListener('mousemove', this.mousemoveCallback)
       window.removeEventListener('mouseup', this.endDrag)
-      
+
       if (this.isMainBarOfDrag) {
-        
-        this.phantomMode=false;
-        this.barConfig.noTooltip=false;
-        this.phantomNewStart=null,
-        this.phantomNewEnd=null,
-        this.cursorX=0,
-        this.cursorY=0
-        this.isMainBarOfDrag = false
+        this.barConfig.noTooltip = false
+        ;(this.phantomNewStart = null), (this.phantomNewEnd = null), (this.isMainBarOfDrag = false)
       }
-      if(this.phantomChild){
-        this.phantomChild=false
+      if (this.phantomChild) {
+        this.phantomChild = false
       }
       this.onDragendBar(e, this, { left, right, move })
     },
@@ -547,15 +540,18 @@ export default {
       }
     },
 
-    getOverlapBarAndType(bar,barsArray) {
-      
+    getOverlapBarAndType(bar, barsArray) {
+      console.log('asdf')
       const barStartGlob = this.textToGlob(bar[this.barStartKey])
       const barEndGlob = this.textToGlob(bar[this.barEndKey])
-      let overlapLeft, overlapRight, overlapInBetween,overlapBar
+      let overlapLeft, overlapRight, overlapInBetween, overlapBar
       console.log(barsArray)
-      if(barsArray===undefined){
-          overlapBar = this.allBarsInRow.find(otherBar => {
-          if (otherBar === bar || (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)) {
+      if (barsArray === undefined) {
+        overlapBar = this.allBarsInRow.find(otherBar => {
+          if (
+            otherBar === bar ||
+            (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)
+          ) {
             return false
           }
           const otherBarStartGlob = this.textToGlob(otherBar[this.barStartKey])
@@ -568,10 +564,12 @@ export default {
             (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
           return overlapLeft || overlapRight || overlapInBetween
         })
-      }
-      else{
-          overlapBar = barsArray.find(otherBar => {
-          if (otherBar === bar || (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)) {
+      } else {
+        overlapBar = barsArray.find(otherBar => {
+          if (
+            otherBar === bar ||
+            (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)
+          ) {
             return false
           }
           const otherBarStartGlob = this.textToGlob(otherBar[this.barStartKey])

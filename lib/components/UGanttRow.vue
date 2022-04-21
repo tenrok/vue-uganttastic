@@ -49,7 +49,7 @@ export default {
     label: { type: String, default: 'Row' },
     labelStyle: { type: Object },
     rowStyle: { type: Object },
-    threadID:{type:String,default:'0'}
+    threadID: { type: String, default: '0' }
   },
 
   inject: ['getAllUnits', 'getChartProps', 'globToText', 'textToGlob'],
@@ -123,12 +123,11 @@ export default {
     },
 
     onDragleave() {
-       console.log(this.data()) 
-      //this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted') 
+      console.log(this.data())
+      //this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     },
 
     onDrop(e) {
-      
       /* const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
       const xPos = e.clientX - barsContainer.left
       const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
@@ -171,8 +170,10 @@ export default {
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     },
     onMouseout(e) {
-      if(e.relatedTarget!==null){
-        e.relatedTarget.classList.contains('u-gantt-bar__tooltip')?this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted'):NaN 
+      if (e.relatedTarget !== null) {
+        e.relatedTarget.classList.contains('u-gantt-bar__tooltip')
+          ? this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
+          : NaN
       }
     },
     onWindowResize() {
