@@ -2,11 +2,7 @@
   <div>
     <div
       ref="u-gantt-bar"
-      :class="[
-        'u-gantt-bar',
-        { 'u-gantt-bar-immobile': barConfig.immobile },
-        { 'u-gantt-bar-resizable': barConfig.handles }
-      ]"
+      :class="['u-gantt-bar', { 'u-gantt-bar-immobile': barConfig.immobile }, { 'u-gantt-bar-resizable': barConfig.handles }]"
       :style="barStyle"
       @mouseenter.stop="onMouseenter($event)"
       @mouseleave.stop="onMouseleave($event)"
@@ -179,9 +175,7 @@ export default {
       if (this.localBar[this.barConfigKey]) {
         return {
           ...this.localBar[this.barConfigKey],
-          background: this.localBar[this.barConfigKey].isShadow
-            ? 'grey'
-            : this.localBar[this.barConfigKey].background || this.localBar[this.barConfigKey].backgroundColor,
+          background: this.localBar[this.barConfigKey].isShadow ? 'grey' : this.localBar[this.barConfigKey].background || this.localBar[this.barConfigKey].backgroundColor,
           opacity: this.localBar[this.barConfigKey].isShadow ? '0.3' : this.localBar[this.barConfigKey].opacity
         }
       }
@@ -350,8 +344,7 @@ export default {
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
-      if (!this.phantomMode)
-        this.offsetY = chart.scrollTop + e.clientY - this.barsContainer.top - this.chartProps.rowHeight / 2
+      if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.barsContainer.top - this.chartProps.rowHeight / 2
 
       this.cursorX = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       this.cursorY = chart.scrollTop + e.clientY - this.barsContainer.top - this.cursorOffsetY
@@ -435,9 +428,7 @@ export default {
         otherBars = this.allBarsInRow.slice(currentIndex + 1)
         if (otherBars.length) {
           let otherBarTotalWidth = otherBars
-            .map(bar =>
-              bar[this.barConfigKey] && bar[this.barConfigKey].pushOnOverlap === false ? 0 : this.getBarWidth(bar)
-            )
+            .map(bar => (bar[this.barConfigKey] && bar[this.barConfigKey].pushOnOverlap === false ? 0 : this.getBarWidth(bar)))
             .reduce((accumulator, currentValue) => accumulator + currentValue)
           if (newXEnd > this.barsContainer.width - otherBarTotalWidth) {
             return true
@@ -447,9 +438,7 @@ export default {
         otherBars = this.allBarsInRow.slice(0, currentIndex)
         if (otherBars.length) {
           let otherBarTotalWidth = otherBars
-            .map(bar =>
-              bar[this.barConfigKey] && bar[this.barConfigKey].pushOnOverlap === false ? 0 : this.getBarWidth(bar)
-            )
+            .map(bar => (bar[this.barConfigKey] && bar[this.barConfigKey].pushOnOverlap === false ? 0 : this.getBarWidth(bar)))
             .reduce((accumulator, currentValue) => accumulator + currentValue)
           if (newXStart < otherBarTotalWidth) {
             return true
@@ -481,6 +470,8 @@ export default {
       //if(Array.from(this.movedBars.values()).includes(this.bar))
       console.log(this.isMainBarOfDrag)
       console.log(this.phantomMode)
+      console.log(this)
+      //if (this.bundleBars !== null)
       this.moveBarToOtherRow(this, e)
 
       this.offsetY = 0
@@ -493,7 +484,10 @@ export default {
 
       if (this.isMainBarOfDrag) {
         this.barConfig.noTooltip = false
-        ;(this.phantomNewStart = null), (this.phantomNewEnd = null), (this.isMainBarOfDrag = false)
+        this.phantomNewStart = null
+        this.phantomNewEnd = null
+        this.isMainBarOfDrag = false
+        this.bundleBars = null
       }
       if (this.phantomChild) {
         this.phantomChild = false
@@ -539,19 +533,15 @@ export default {
         ;({ overlapBar, overlapType } = this.getOverlapBarAndType(overlapBar))
       }
     },
-
+    //TODO: on full overlay passes
     getOverlapBarAndType(bar, barsArray) {
-      console.log('asdf')
       const barStartGlob = this.textToGlob(bar[this.barStartKey])
       const barEndGlob = this.textToGlob(bar[this.barEndKey])
       let overlapLeft, overlapRight, overlapInBetween, overlapBar
       console.log(barsArray)
       if (barsArray === undefined) {
         overlapBar = this.allBarsInRow.find(otherBar => {
-          if (
-            otherBar === bar ||
-            (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)
-          ) {
+          if (otherBar === bar || (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)) {
             return false
           }
           const otherBarStartGlob = this.textToGlob(otherBar[this.barStartKey])
@@ -559,17 +549,12 @@ export default {
 
           overlapLeft = barStartGlob > otherBarStartGlob && barStartGlob < otherBarEndGlob
           overlapRight = barEndGlob > otherBarStartGlob && barEndGlob < otherBarEndGlob
-          overlapInBetween =
-            (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) ||
-            (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
+          overlapInBetween = (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) || (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
           return overlapLeft || overlapRight || overlapInBetween
         })
       } else {
         overlapBar = barsArray.find(otherBar => {
-          if (
-            otherBar === bar ||
-            (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)
-          ) {
+          if (otherBar === bar || (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)) {
             return false
           }
           const otherBarStartGlob = this.textToGlob(otherBar[this.barStartKey])
@@ -577,9 +562,7 @@ export default {
 
           overlapLeft = barStartGlob > otherBarStartGlob && barStartGlob < otherBarEndGlob
           overlapRight = barEndGlob > otherBarStartGlob && barEndGlob < otherBarEndGlob
-          overlapInBetween =
-            (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) ||
-            (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
+          overlapInBetween = (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) || (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
           return overlapLeft || overlapRight || overlapInBetween
         })
       }
