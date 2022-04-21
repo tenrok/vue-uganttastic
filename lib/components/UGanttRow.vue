@@ -100,10 +100,6 @@ export default {
     },
 
     bars(value) {
-      
-      if(this.localBars.length>value.length){
-        value[value.length-1].manageOverlapping()
-      }
       this.localBars = value
     }
   },

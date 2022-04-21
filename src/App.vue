@@ -167,7 +167,7 @@ export default {
           {
             start: 'group1, 1',
             end: 'group2, 1',
-            label: 'We belong together ^',
+            label: 'We belong together (h)',
             tooltip: 'Bar tooltip',
             config: {
               color: 'white',
@@ -178,7 +178,7 @@ export default {
           {
             start: 'group2, 2',
             end: 'group3, 0',
-            label: 'We belong together ^',
+            label: 'We belong together (v&h)',
             tooltip: 'Bar tooltip',
             config: {
               color: 'white',
