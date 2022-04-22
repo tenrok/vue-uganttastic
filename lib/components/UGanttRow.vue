@@ -18,13 +18,7 @@
       @mouseleave="onMouseleave()"
       @mouseout="onMouseout($event)"
     >
-      <u-gantt-bar
-        v-for="(bar, index) in localBars"
-        :key="`bar-${index}`"
-        :all-bars-in-row="localBars"
-        :bar="bar"
-        :bars-container="barsContainer"
-      >
+      <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
         <template #bar-label="{ bar }">
           <slot name="bar-label" :bar="bar" />
         </template>
@@ -107,10 +101,12 @@ export default {
   mounted() {
     this.barsContainer = this.$refs['bars-container'].getBoundingClientRect()
     window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('scroll', this.onWindowResize)
   },
 
   destroyed() {
     window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('scroll', this.onWindowResize)
   },
 
   methods: {
@@ -152,10 +148,7 @@ export default {
         bar[this.chartProps.barEndKey] = this.globToText(time + this.defaultBarLength, 'end')
         bar[this.barConfigKey] = { handles: true }
         this.localBars.push(bar)
-        this.localBars.sort(
-          (first, second) =>
-            this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey])
-        )
+        this.localBars.sort((first, second) => this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey]))
       }
       this.$emit('dblclick', e)
     },
@@ -171,9 +164,7 @@ export default {
     },
     onMouseout(e) {
       if (e.relatedTarget !== null) {
-        e.relatedTarget.classList.contains('u-gantt-bar__tooltip')
-          ? this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
-          : NaN
+        e.relatedTarget.classList.contains('u-gantt-bar__tooltip') ? this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted') : NaN
       }
     },
     onWindowResize() {

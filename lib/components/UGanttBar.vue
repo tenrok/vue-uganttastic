@@ -206,7 +206,7 @@ export default {
           top: `${this.phantomY}px`,
           position: 'absolute',
           opacity: 0.7,
-          zIndex: 100,
+          zIndex: 2,
           cursor: this.phantomCursorType
         }
       }
@@ -340,12 +340,13 @@ export default {
 
     drag(e) {
       const chart = e.target.closest('.u-gantt-chart')
+      console.log(this.$parent.barsContainer.left, this.$parent.barsContainer.width)
       if (!chart) return
       if (this.$refs['u-gantt-bar'] === undefined) return
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
-      const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
+      const newXStart = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
-      if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.barsContainer.top - this.chartProps.rowHeight / 2
+      if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.$parent.barsContainer.top - this.chartProps.rowHeight / 2
 
       //console.log(this.phantomX+' '+this.phantomY)
       if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
@@ -356,8 +357,8 @@ export default {
         //document.body.style.cursor=this.checkBarMoving(this,e)
       }
       if (this.phantomMode) {
-        this.phantomX = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
-        this.phantomY = chart.scrollTop + e.clientY - this.barsContainer.top - this.cursorOffsetY
+        this.phantomX = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
+        this.phantomY = +e.clientY - this.$parent.barsContainer.top - this.cursorOffsetY
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
