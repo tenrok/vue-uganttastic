@@ -99,10 +99,10 @@ export default {
       phantomCursorType: 'grabbing',
       phantomNewStart: null,
       phantomNewEnd: null,
-      phantomChild: false,
       bundleBars: null,
       phantomX: 0,
-      phantomY: 0
+      phantomY: 0,
+      phantomChild: false
     }
   },
 
@@ -341,6 +341,7 @@ export default {
     drag(e) {
       const chart = e.target.closest('.u-gantt-chart')
       if (!chart) return
+      if (this.$refs['u-gantt-bar'] === undefined) return
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
@@ -360,7 +361,7 @@ export default {
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
-        console.log('New position: ' + this.phantomNewStart + ' ' + this.phantomNewEnd)
+        //console.log('New position: ' + this.phantomNewStart + ' ' + this.phantomNewEnd)
 
         this.onBarEvent({ event: e, type: 'drag' }, this)
         return
@@ -449,6 +450,27 @@ export default {
 
       return false
     },
+    isNewPosOutOfDragRange() {
+      let newPosXStart = this.mapGlobToPosition(this.textToGlob(this.bar.start))
+      let newPosXEnd = this.mapGlobToPosition(this.textToGlob(this.bar.end))
+      if (newPosXStart && newPosXStart < 0) {
+        return true
+      }
+      if (newPosXEnd > this.barsContainer.width) {
+        return true
+      }
+      if (newPosXStart && this.dragLimitLeft !== null && newPosXStart < this.dragLimitLeft + this.minGapBetweenBars) {
+        return true
+      }
+      if (newPosXEnd && this.dragLimitRight !== null && newPosXEnd > this.dragLimitRight - this.minGapBetweenBars) {
+        return true
+      }
+
+      if (!this.chartProps.pushOnOverlap || this.barConfig.pushOnOverlap === false) {
+        return false
+      }
+      return false
+    },
 
     endDrag(e) {
       //this.barConfig.noTooltip=false;
@@ -473,7 +495,7 @@ export default {
       console.log(this.phantomMode)
       console.log(this)
       //if (this.bundleBars !== null)
-      this.moveBarToOtherRow(this, e)
+      if (this.isMainBarOfDrag) this.moveBarToOtherRow(this, e)
 
       this.offsetY = 0
       this.isDragging = false
@@ -489,9 +511,6 @@ export default {
         this.phantomNewEnd = null
         this.isMainBarOfDrag = false
         this.bundleBars = null
-      }
-      if (this.phantomChild) {
-        this.phantomChild = false
       }
       this.onDragendBar(e, this, { left, right, move })
     },
@@ -535,6 +554,7 @@ export default {
       }
     },
     getOverlapBarAndType(bar, barsArray) {
+      console.log(bar)
       const barStartGlob = this.textToGlob(bar[this.barStartKey])
       const barEndGlob = this.textToGlob(bar[this.barEndKey])
       let overlapLeft, overlapRight, overlapInBetween, overlapBar
