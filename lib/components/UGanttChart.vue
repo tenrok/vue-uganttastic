@@ -174,14 +174,17 @@ export default {
           //computing common row offset
           if (isFixed === undefined) {
             let barNewRowIndex = ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset
+            console.log(gGanttBar.phantomNewEnd, gGanttBar.barsContainer.width)
             if (
               barNewRowIndex < ganttRowChildrenList.length &&
               barNewRowIndex >= 0 &&
               selectedRow.threadID === parent.threadID &&
-              !gGanttBar.isPosOutOfDragRange(gGanttBar.phantomNewStart, gGanttBar.phantomNewEnd)
+              !gGanttBar.isPosOutOfDragRange(gGanttBar.phantomX, gGanttBar.phantomX + gGanttBar.getBarWidth(gGanttBar.bar))
             ) {
+              console.log(gGanttBar.phantomNewStart + gGanttBar.getBarWidth(gGanttBar.localBar))
               gGanttBar.bar.start = this.globToText(gGanttBar.phantomNewStart)
               gGanttBar.bar.end = this.globToText(gGanttBar.phantomNewEnd)
+              console.log(gGanttBar.bar.end)
               this.magnetize(gGanttBar)
               if (gGanttBar.getOverlapBarAndType(gGanttBar.localBar, ganttRowChildrenList[barNewRowIndex].localBars).overlapBar === undefined) {
                 console.log('фуфыкс воскрес')
@@ -190,29 +193,32 @@ export default {
               } else gGanttBar.snapBack()
             } else gGanttBar.snapBack()
           } else if (isFixed) {
+            let outOfRangeCheck = !gGanttBar.isPosOutOfDragRange(gGanttBar.phantomX, gGanttBar.phantomX + gGanttBar.getBarWidth(gGanttBar.bar))
             gGanttBar.bar.start = this.globToText(gGanttBar.phantomNewStart)
             gGanttBar.bar.end = this.globToText(gGanttBar.phantomNewEnd)
             this.magnetize(gGanttBar)
 
             console.log(gGanttBar.getOverlapBarAndType(gGanttBar.bar, ganttRowChildrenList[ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset].localBars).overlapBar)
-            let confirmBarsRowMoving = gGanttBar.bundleBars.every(bar => {
-              let barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bar.localBar).$parent
-              let barNewRowIndex = ganttRowChildrenList.findIndex(el => el === barParent) + this.rowOffset
+            let confirmBarsRowMoving =
+              gGanttBar.bundleBars.every(bundleBar => {
+                let barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bundleBar.localBar).$parent
+                let barNewRowIndex = ganttRowChildrenList.findIndex(el => el === barParent) + this.rowOffset
 
-              //gGanttBar.bar.start = this.globToText(gGanttBar.phantomNewStart)
-              //gGanttBar.bar.end = this.globToText(gGanttBar.phantomNewEnd)
-              if (
-                barNewRowIndex < ganttRowChildrenList.length &&
-                barNewRowIndex >= 0 &&
-                barParent.threadID === ganttRowChildrenList[barNewRowIndex].threadID &&
-                bar.getOverlapBarAndType(
-                  bar.localBar,
-                  ganttRowChildrenList[barNewRowIndex].localBars.filter(el => el.config.bundle !== gGanttBar.barConfig.bundle)
-                ).overlapBar === undefined
-              )
-                return true
-              else return false
-            })
+                //gGanttBar.bar.start = this.globToText(gGanttBar.phantomNewStart)
+                //gGanttBar.bar.end = this.globToText(gGanttBar.phantomNewEnd)
+                if (
+                  barNewRowIndex < ganttRowChildrenList.length &&
+                  barNewRowIndex >= 0 &&
+                  barParent.threadID === ganttRowChildrenList[barNewRowIndex].threadID &&
+                  bundleBar.getOverlapBarAndType(
+                    bundleBar.localBar,
+                    ganttRowChildrenList[barNewRowIndex].localBars.filter(el => el.config.bundle !== gGanttBar.barConfig.bundle)
+                  ).overlapBar === undefined &&
+                  !bundleBar.isPosOutOfDragRange(bundleBar.phantomX, bundleBar.phantomX + bundleBar.getBarWidth(bundleBar.bar))
+                )
+                  return true
+                else return false
+              }) && outOfRangeCheck
             console.log(confirmBarsRowMoving)
             if (!confirmBarsRowMoving) {
               this.rowOffset = 0
@@ -220,18 +226,21 @@ export default {
             }
             //approving value if fixed
           } else {
+            let outOfRangeCheck = !gGanttBar.isPosOutOfDragRange(gGanttBar.phantomX, gGanttBar.phantomX + gGanttBar.getBarWidth(gGanttBar.bar))
             gGanttBar.bar.start = this.globToText(gGanttBar.phantomNewStart)
             gGanttBar.bar.end = this.globToText(gGanttBar.phantomNewEnd)
             gGanttBar.bundleBars.forEach(el => this.magnetize(el))
-            let confirmBarsRowMoving = gGanttBar.bundleBars.every(bundleBar => {
-              let barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bundleBar.bar).$parent
-              if (
-                bundleBar === gGanttBar ||
-                gGanttBar.getOverlapBarAndType(bundleBar.bar, ganttRowChildrenList[ganttRowChildrenList.findIndex(el => el === barParent)].localBars).overlapBar === undefined
-              )
-                return true
-              else return false
-            })
+            let confirmBarsRowMoving =
+              gGanttBar.bundleBars.every(bundleBar => {
+                let barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bundleBar.bar).$parent
+
+                if (
+                  bundleBar === gGanttBar ||
+                  gGanttBar.getOverlapBarAndType(bundleBar.bar, ganttRowChildrenList[ganttRowChildrenList.findIndex(el => el === barParent)].localBars).overlapBar === undefined
+                )
+                  return true
+                else return false
+              }) && outOfRangeCheck
             if (
               confirmBarsRowMoving &&
               selectedRow.threadID === parent.threadID &&
@@ -249,31 +258,36 @@ export default {
         //finally shifting case fixed
       }
     },
+    //TODO: rewrite fixed variant with stack
     invokeBarTransition(gGanttBar, ganttRowChildrenList, parent) {
       //bar to move, row-array, bar-parent; new-row computes by this.rowOffset
+
       console.log(gGanttBar)
       let newRowIndex = ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset
       if (ganttRowChildrenList[newRowIndex] === parent) {
-        console.log('жи есть')
+        //console.log('жи есть')
         return
       }
+      //let tempLocalBars = new Set(ganttRowChildrenList[newRowIndex].localBars)
       //let { overlapBar } = gGanttBar.getOverlapBarAndType(gGanttBar.bar, ganttRowChildrenList[newRowIndex].localBars)
       //console.log(overlapBar)
       //if (overlapBar === undefined) {
-      console.log(newRowIndex)
+      let tmpBar = gGanttBar.localBar
       parent.localBars.sort(function comp(a, b) {
         if (a === gGanttBar.localBar) return 1
         else if (b === gGanttBar.localBar) return -1
         else return 0
       })
+      console.log(gGanttBar.localBar)
       parent.localBars.pop()
-      console.log(ganttRowChildrenList)
+      console.log(gGanttBar.localBar)
+      //tempLocalBars.add()
+      ganttRowChildrenList[newRowIndex].localBars.push(tmpBar)
 
-      ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar.localBar)
-
-      console.log(ganttRowChildrenList)
-      //ganttRowChildrenList[newRowIndex].localBars.sort((first, second) => this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey]))
+      console.log(ganttRowChildrenList[newRowIndex].localBars)
+      ganttRowChildrenList[newRowIndex].localBars.sort((first, second) => this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey]))
       //} else this.snapBackBundle(gGanttBar)
+      console.log(ganttRowChildrenList[newRowIndex].localBars)
     },
     getGanttBarChildrenList() {
       let ganttBarChildren = []

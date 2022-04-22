@@ -101,8 +101,8 @@ export default {
       phantomNewEnd: null,
       phantomChild: false,
       bundleBars: null,
-      cursorX: 0,
-      cursorY: 0
+      phantomX: 0,
+      phantomY: 0
     }
   },
 
@@ -200,10 +200,10 @@ export default {
         const xEnd = this.mapGlobToPosition(this.barEndGlob)
         return {
           ...(this.barConfig || {}),
-          left: `${this.cursorX}px`,
+          left: `${this.phantomX}px`,
           width: `${xEnd - xStart}px`,
           height: `${this.chartProps.rowHeight - 6}px`,
-          top: `${this.cursorY}px`,
+          top: `${this.phantomY}px`,
           position: 'absolute',
           opacity: 0.7,
           zIndex: 100,
@@ -312,8 +312,8 @@ export default {
       this.cursorOffsetX = e.clientX - barX
       this.cursorOffsetY = e.clientY - barY
 
-      this.cursorX = 0
-      this.cursorY = 0
+      this.phantomX = 0
+      this.phantomY = 0
 
       let mousedownType = e.target.className
       switch (mousedownType) {
@@ -346,9 +346,7 @@ export default {
       const newXEnd = newXStart + barWidth
       if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.barsContainer.top - this.chartProps.rowHeight / 2
 
-      this.cursorX = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
-      this.cursorY = chart.scrollTop + e.clientY - this.barsContainer.top - this.cursorOffsetY
-      //console.log(this.cursorX+' '+this.cursorY)
+      //console.log(this.phantomX+' '+this.phantomY)
       if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
         this.phantomMode = true
         this.bundleBars.forEach(el => (el.phantomChild = true))
@@ -357,10 +355,13 @@ export default {
         //document.body.style.cursor=this.checkBarMoving(this,e)
       }
       if (this.phantomMode) {
+        this.phantomX = chart.scrollLeft + e.clientX - this.barsContainer.left - this.cursorOffsetX
+        this.phantomY = chart.scrollTop + e.clientY - this.barsContainer.top - this.cursorOffsetY
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
-        //console.log('New position: '+this.phantomNewStart+' '+this.phantomNewEnd)
+        console.log('New position: ' + this.phantomNewStart + ' ' + this.phantomNewEnd)
+
         this.onBarEvent({ event: e, type: 'drag' }, this)
         return
       }
@@ -533,7 +534,6 @@ export default {
         ;({ overlapBar, overlapType } = this.getOverlapBarAndType(overlapBar))
       }
     },
-    //TODO: on full overlay passes
     getOverlapBarAndType(bar, barsArray) {
       const barStartGlob = this.textToGlob(bar[this.barStartKey])
       const barEndGlob = this.textToGlob(bar[this.barEndKey])
@@ -549,7 +549,10 @@ export default {
 
           overlapLeft = barStartGlob > otherBarStartGlob && barStartGlob < otherBarEndGlob
           overlapRight = barEndGlob > otherBarStartGlob && barEndGlob < otherBarEndGlob
-          overlapInBetween = (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) || (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
+          overlapInBetween =
+            (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) ||
+            (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob) ||
+            (barStartGlob === otherBarStartGlob && barEndGlob === otherBarEndGlob)
           return overlapLeft || overlapRight || overlapInBetween
         })
       } else {
@@ -562,7 +565,10 @@ export default {
 
           overlapLeft = barStartGlob > otherBarStartGlob && barStartGlob < otherBarEndGlob
           overlapRight = barEndGlob > otherBarStartGlob && barEndGlob < otherBarEndGlob
-          overlapInBetween = (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) || (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob)
+          overlapInBetween =
+            (otherBarStartGlob > barStartGlob && otherBarStartGlob < barEndGlob) ||
+            (otherBarEndGlob > barStartGlob && otherBarEndGlob < barEndGlob) ||
+            (barStartGlob === otherBarStartGlob && barEndGlob === otherBarEndGlob)
           return overlapLeft || overlapRight || overlapInBetween
         })
       }

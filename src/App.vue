@@ -8,8 +8,8 @@
       bar-start-key="start"
       bar-end-key="end"
       bar-config-key="config"
-      :bundles='bundles'
-      :globalBundles='globalBundles'
+      :bundles="bundles"
+      :globalBundles="globalBundles"
       :no-tooltip="noTooltip"
       :grid="grid"
       :grid-size="gridSize"
@@ -72,19 +72,20 @@ export default {
         units: 5
       }
     ],
-    bundles:[
-    {
-      key:'blueBundle',
-      value:'fixed'
-    },
-    {
-      key:'redBundle',
-      value:'relative'
-    }],
+    bundles: [
+      {
+        key: 'blueBundle',
+        value: 'fixed'
+      },
+      {
+        key: 'redBundle',
+        value: 'relative'
+      }
+    ],
     noTooltip: false,
     grid: true,
     gridSize: 30,
-    globalBundles:'fixed',
+    globalBundles: 'fixed',
     isMagnetic: true,
     height: '50vh',
     hideTimeaxis: false,
@@ -96,7 +97,7 @@ export default {
     rows: [
       {
         label: 'Group 0',
-        
+
         bars: [
           {
             start: 'group1, 3',
@@ -156,7 +157,7 @@ export default {
             config: { color: 'white', backgroundColor: '#aa34a3' }
           }
         ],
-        threadID:'1'
+        threadID: '1'
       },
       {
         label: '2/3',
@@ -197,9 +198,9 @@ export default {
               pushOnOverlap: false,
               zIndex: 2
             }
-          }          
+          }
         ],
-        threadID:'1'
+        threadID: '1'
       },
       {
         label: '3/3',
@@ -230,7 +231,7 @@ export default {
             }
           }
         ],
-        threadID:'1'
+        threadID: '1'
       },
       {
         label: 'Group 2',
@@ -239,7 +240,7 @@ export default {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',
           backgroundSize: '1em 1em'
         },
-        threadID:'2'
+        threadID: '2'
       },
       {
         label: '2/2',
@@ -247,24 +248,11 @@ export default {
           justifyContent: 'end'
         },
         bars: [],
-        threadID:'2'
-        
+        threadID: '2'
       }
     ],
     theme: 'default',
-    themes: [
-      'creamy',
-      'crimson',
-      'dark',
-      'default',
-      'flare',
-      'fuchsia',
-      'grove',
-      'material-blue',
-      'sky',
-      'slumber',
-      'vue'
-    ]
+    themes: ['creamy', 'crimson', 'dark', 'default', 'flare', 'fuchsia', 'grove', 'material-blue', 'sky', 'slumber', 'vue']
   }),
 
   methods: {
@@ -277,4 +265,4 @@ export default {
 }
 </script>
 
-<style lang="scss" src="../lib/scss/index.scss"/>
+<style lang="scss" src="../lib/scss/index.scss" />
