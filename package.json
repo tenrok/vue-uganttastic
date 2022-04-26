@@ -1,6 +1,6 @@
 {
   "name": "vue-uganttastic",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
   "keywords": [
     "gantt",
@@ -46,8 +46,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@vue/cli": "^5.0.4",
-    "@vue/cli-service-global": "^4.5.17",
     "vue": "^2.6.12"
   },
   "devDependencies": {
