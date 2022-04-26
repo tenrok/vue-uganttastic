@@ -102,7 +102,8 @@ export default {
       bundleBars: null,
       phantomX: 0,
       phantomY: 0,
-      phantomChild: false
+      phantomChild: false,
+      newRowThreadId: null
     }
   },
 
@@ -299,6 +300,7 @@ export default {
 
     initDrag(e) {
       //this.barConfig.noTooltip=true;
+      document.body.style.cursor = 'move'
 
       this.isDragging = true
       this.barStartBeforeDrag = this.textToGlob(this.localBar[this.barStartKey])
@@ -339,7 +341,7 @@ export default {
     drag(e) {
       const chart = e.target.closest('.u-gantt-chart')
       //console.log(this.$parent.barsContainer.left, this.$parent.barsContainer.width)
-      if (!chart||!this.$refs['u-gantt-bar']) return
+      if (!chart || !this.$refs['u-gantt-bar']) return
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
@@ -354,8 +356,8 @@ export default {
         //document.body.style.cursor=this.checkBarMoving(this,e)
       }
       if (this.phantomMode) {
-        this.phantomX = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
-        this.phantomY = +e.clientY - this.$parent.barsContainer.top - this.cursorOffsetY
+        this.phantomX = e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
+        this.phantomY = e.clientY - this.$parent.barsContainer.top - this.cursorOffsetY
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
@@ -467,8 +469,7 @@ export default {
       //console.log('endDrag', { left, right, move })
       //console.log(Array.from(this.movedBars.values()))
       //console.log(this)
-      if (this.isMainBarOfDrag&&this.phantomMode) this.moveBarToOtherRow(this, e)
-
+      if (this.isMainBarOfDrag && this.phantomMode) this.moveBarToOtherRow(this, e)
       this.offsetY = 0
       this.isDragging = false
       this.dragLimitLeft = null

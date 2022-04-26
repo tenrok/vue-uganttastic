@@ -32,7 +32,8 @@
         :label="row.label"
         :label-style="row.labelStyle"
         :row-style="row.style"
-        :threadID="row.threadID"
+        :groupThreadId="row.groupThreadId"
+        :threadId="row.threadId"
       >
         <template #bar-label="{ bar }">
           <span>{{ bar.label }}</span>
@@ -157,7 +158,8 @@ export default {
             config: { color: 'white', backgroundColor: '#aa34a3' }
           }
         ],
-        threadID: '1'
+        groupThreadId: '1',
+        threadId: '1'
       },
       {
         label: '2/3',
@@ -200,7 +202,8 @@ export default {
             }
           }
         ],
-        threadID: '1'
+        groupThreadId: '1',
+        threadId: '2'
       },
       {
         label: '3/3',
@@ -231,7 +234,8 @@ export default {
             }
           }
         ],
-        threadID: '1'
+        groupThreadId: '1',
+        threadId: '3'
       },
       {
         label: 'Group 2',
@@ -240,7 +244,7 @@ export default {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',
           backgroundSize: '1em 1em'
         },
-        threadID: '2'
+        groupThreadId: '2'
       },
       {
         label: '2/2',
@@ -248,7 +252,7 @@ export default {
           justifyContent: 'end'
         },
         bars: [],
-        threadID: '2'
+        groupThreadId: '2'
       }
     ],
     theme: 'default',

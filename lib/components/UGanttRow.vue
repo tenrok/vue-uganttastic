@@ -40,7 +40,8 @@ export default {
     label: { type: String, default: 'Row' },
     labelStyle: { type: Object },
     rowStyle: { type: Object },
-    threadID: { type: String, default: '0' }
+    groupThreadId: { type: String, default: '0' },
+    threadId: { type: String, default: '0' }
   },
 
   inject: ['getAllUnits', 'getChartProps', 'globToText', 'textToGlob'],
@@ -107,7 +108,7 @@ export default {
   },
 
   methods: {
-  /*   onDragover(e) {
+    /*   onDragover(e) {
       e.preventDefault()
       // enables dropping content on row
       if (this.highlightOnHover) {
@@ -115,12 +116,12 @@ export default {
       }
     },
  */
-/*     onDragleave() {
+    /*     onDragleave() {
       console.log(this.data())
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     }, */
 
-/*     onDrop(e) {
+    /*     onDrop(e) {
       const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
       const xPos = e.clientX - barsContainer.left
       const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
