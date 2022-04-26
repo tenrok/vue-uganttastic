@@ -261,9 +261,9 @@ export default {
 
   methods: {
     onDragend(e) {
-      const { event, bar, movedBars } = e
+      const { event, bar, movedBars, barMoveToThread } = e
       // eslint-disable-next-line
-      console.log('onDragend', { event: event.type, bar, movedBars })
+      console.log('onDragend', { event: event.type, bar, movedBars, barMoveToThread })
     }
   }
 }
