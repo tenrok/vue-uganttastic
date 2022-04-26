@@ -9,21 +9,13 @@
       ref="bars-container"
       class="u-gantt-row__bars-container"
       :style="rowStyle"
-      @dragover="onDragover($event)"
-      @dragleave="onDragleave($event)"
-      @drop="onDrop($event)"
       @click.self="$emit('click', $event)"
       @dblclick.self="onDoubleClick($event)"
-      @mouseover="onMouseover()"
+      @mouseover.self="onMouseover()"
       @mouseleave="onMouseleave()"
+      @mouseout="onMouseout($event)"
     >
-      <u-gantt-bar
-        v-for="(bar, index) in localBars"
-        :key="`bar-${index}`"
-        :all-bars-in-row="localBars"
-        :bar="bar"
-        :bars-container="barsContainer"
-      >
+      <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
         <template #bar-label="{ bar }">
           <slot name="bar-label" :bar="bar" />
         </template>
@@ -47,7 +39,9 @@ export default {
     highlightOnHover: { type: Boolean },
     label: { type: String, default: 'Row' },
     labelStyle: { type: Object },
-    rowStyle: { type: Object }
+    rowStyle: { type: Object },
+    groupThreadId: { type: String, default: '0' },
+    threadId: { type: String, default: '0' }
   },
 
   inject: ['getAllUnits', 'getChartProps', 'globToText', 'textToGlob'],
@@ -105,36 +99,37 @@ export default {
   mounted() {
     this.barsContainer = this.$refs['bars-container'].getBoundingClientRect()
     window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('scroll', this.onWindowResize)
   },
 
   destroyed() {
     window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('scroll', this.onWindowResize)
   },
 
   methods: {
-    onDragover(e) {
-      e.preventDefault() // enables dropping content on row
+    /*   onDragover(e) {
+      e.preventDefault()
+      // enables dropping content on row
       if (this.highlightOnHover) {
         this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
       }
     },
-
-    onDragleave() {
+ */
+    /*     onDragleave() {
+      console.log(this.data())
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
-    },
+    }, */
 
-    onDrop(e) {
+    /*     onDrop(e) {
       const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
       const xPos = e.clientX - barsContainer.left
       const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
       const time = timeDiffFromStart
-      const bar = this.localBars.find(
-        bar =>
-          time >= this.textToGlob(bar[this.chartProps.barStartKey]) &&
-          time <= this.textToGlob(bar[this.chartProps.barEndKey])
-      )
-      this.$emit('drop', { event: e, bar, time })
-    },
+      const bar = this.localBars.find(bar => time >= this.textToGlob(bar[this.chartProps.barStartKey]) && time <= this.textToGlob(bar[this.chartProps.barEndKey]))
+      //this.$emit('drop', { event: e, bar, time })
+      console.log(e)
+    }, */
 
     onDoubleClick(e) {
       if (this.chartProps.allowAdd) {
@@ -147,10 +142,7 @@ export default {
         bar[this.chartProps.barEndKey] = this.globToText(time + this.defaultBarLength, 'end')
         bar[this.barConfigKey] = { handles: true }
         this.localBars.push(bar)
-        this.localBars.sort(
-          (first, second) =>
-            this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey])
-        )
+        this.localBars.sort((first, second) => this.textToGlob(first[this.chartProps.barStartKey]) - this.textToGlob(second[this.chartProps.barStartKey]))
       }
       this.$emit('dblclick', e)
     },
@@ -164,7 +156,11 @@ export default {
     onMouseleave() {
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     },
-
+    onMouseout(e) {
+      if (e.relatedTarget !== null) {
+        e.relatedTarget.classList.contains('u-gantt-bar__tooltip') ? this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted') : NaN
+      }
+    },
     onWindowResize() {
       // re-initialize the barsContainer DOMRect variable, which will trigger re-rendering in the gantt bars
       if (this.$refs['bars-container']) {
