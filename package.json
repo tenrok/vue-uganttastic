@@ -16,18 +16,22 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Marko Zunic",
-    "email": "marko.zunic06@gmail.com",
-    "url": "https://github.com/InfectoOne"
+    "name": "Sergey Solodyagin",
+    "url": "https://github.com/solodyagin"
   },
   "contributors": [
+    {
+      "name": "Marko Zunic",
+      "email": "marko.zunic06@gmail.com",
+      "url": "https://github.com/InfectoOne"
+    },
     {
       "name": "Yicone Wong",
       "url": "https://github.com/yicone"
     },
     {
-      "name": "Sergey Solodyagin",
-      "url": "https://github.com/solodyagin"
+      "name": "rat1borik",
+      "url": "https://github.com/rat1borik"
     }
   ],
   "files": [
@@ -41,7 +45,6 @@
   "scripts": {
     "serve": "vue-cli-service serve --open",
     "demo:build": "vue-cli-service build",
-    "demo:buildAndDeploy": "vue-cli-service build deploy.bat",
     "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js",
     "lint": "vue-cli-service lint"
   },

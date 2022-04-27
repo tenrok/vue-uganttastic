@@ -4,12 +4,12 @@
       ref="u-gantt-bar"
       :class="['u-gantt-bar', { 'u-gantt-bar-immobile': barConfig.immobile }, { 'u-gantt-bar-resizable': barConfig.handles }]"
       :style="barStyle"
-      @mouseenter.stop="onMouseenter($event)"
-      @mouseleave.stop="onMouseleave($event)"
-      @mousedown.stop="onMousedown($event)"
+      @mouseenter.stop="onMouseEnter($event)"
+      @mouseleave.stop="onMouseLeave($event)"
+      @mousedown.stop="onMouseDown($event)"
       @click.stop="onClick($event)"
-      @dblclick="onDblclick($event)"
-      @contextmenu="onContextmenu($event)"
+      @dblclick="onDoubleClick($event)"
+      @contextmenu="onContextMenu($event)"
     >
       <div class="u-gantt-bar__label">
         <slot name="bar-label" :bar="localBar">{{ barConfig.label }}</slot>
@@ -111,6 +111,7 @@ export default {
     movedBars() {
       return this.getMovedBars()
     },
+
     allUnits() {
       return this.getAllUnits()
     },
@@ -184,8 +185,9 @@ export default {
     },
 
     barStyle() {
+      if (!this.barsContainer.width) return
+
       if (!this.phantomMode) {
-        if (!this.barsContainer.width) return
         const xStart = this.mapGlobToPosition(this.barStartGlob)
         const xEnd = this.mapGlobToPosition(this.barEndGlob)
         return {
@@ -196,7 +198,6 @@ export default {
           zIndex: this.barConfig.zIndex || (this.isDragging ? 2 : 1)
         }
       } else {
-        if (!this.barsContainer.width) return
         const xStart = this.mapGlobToPosition(this.barStartGlob)
         const xEnd = this.mapGlobToPosition(this.barEndGlob)
         return {
@@ -236,7 +237,7 @@ export default {
   },
 
   methods: {
-    onMouseenter(e) {
+    onMouseEnter(e) {
       if (!this.noTooltip) {
         if (this.tooltipTimeout) {
           clearTimeout(this.tooltipTimeout)
@@ -247,7 +248,7 @@ export default {
       this.onBarEvent({ event: e, type: e.type }, this)
     },
 
-    onMouseleave(e) {
+    onMouseLeave(e) {
       if (!this.noTooltip) {
         clearTimeout(this.tooltipTimeout)
         this.showTooltip = false
@@ -256,7 +257,7 @@ export default {
       this.onBarEvent({ event: e, type: e.type }, this)
     },
 
-    onContextmenu(e) {
+    onContextMenu(e) {
       const time = this.mapPositionToGlob(e.clientX - this.barsContainer.left)
       this.onBarEvent({ event: e, type: e.type, time }, this)
     },
@@ -266,12 +267,12 @@ export default {
       this.onBarEvent({ event: e, type: e.type, time }, this)
     },
 
-    onDblclick(e) {
+    onDoubleClick(e) {
       const time = this.mapPositionToGlob(e.clientX - this.barsContainer.left)
       this.onBarEvent({ event: e, type: e.type, time }, this)
     },
 
-    onMousedown(e) {
+    onMouseDown(e) {
       e.preventDefault()
       if (e.button === 2) {
         return
@@ -280,9 +281,9 @@ export default {
       if (!this.barConfig.immobile && !this.barConfig.isShadow) {
         this.setDragLimitsOfGanttBar(this)
         // initialize the dragging on next mousemove event:
-        window.addEventListener('mousemove', this.onFirstMousemove, { once: true })
+        window.addEventListener('mousemove', this.onFirstMouseMove, { once: true })
         // if next mousemove happens after mouse up (if user just presses mouse button down, then up, without moving):
-        window.addEventListener('mouseup', () => window.removeEventListener('mousemove', this.onFirstMousemove), {
+        window.addEventListener('mouseup', () => window.removeEventListener('mousemove', this.onFirstMouseMove), {
           once: true
         })
       }
@@ -290,16 +291,14 @@ export default {
       this.onBarEvent({ event: e, type: e.type, time }, this)
     },
 
-    onFirstMousemove(e) {
+    onFirstMouseMove(e) {
       this.isMainBarOfDrag = true
       // this method is injected here by UGanttChart.vue, and calls initDrag()
       // for all UGanttBars that belong to the same bundle as this bar:
       this.bundleBars = this.initDragOfBarsFromBundle(this, e)
-      //console.log(this.bundleBars)
     },
 
     initDrag(e) {
-      //this.barConfig.noTooltip=true;
       document.body.style.cursor = 'move'
 
       this.isDragging = true
@@ -340,20 +339,16 @@ export default {
 
     drag(e) {
       const chart = e.target.closest('.u-gantt-chart')
-      //console.log(this.$parent.barsContainer.left, this.$parent.barsContainer.width)
       if (!chart || !this.$refs['u-gantt-bar']) return
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
       if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.$parent.barsContainer.top - this.chartProps.rowHeight / 2
 
-      //console.log(this.phantomX+' '+this.phantomY)
       if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
         this.phantomMode = true
         this.bundleBars.forEach(el => (el.phantomChild = true))
         this.barConfig.noTooltip = true
-
-        //document.body.style.cursor=this.checkBarMoving(this,e)
       }
       if (this.phantomMode) {
         this.phantomX = e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
@@ -361,8 +356,6 @@ export default {
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
-        //console.log('New position: ' + this.phantomNewStart + ' ' + this.phantomNewEnd)
-
         //this.onBarEvent({ event: e, type: 'drag' }, this)
         return
       }
@@ -372,16 +365,15 @@ export default {
 
       this.barStartGlob = this.mapPositionToGlob(newXStart)
       this.barEndGlob = this.mapPositionToGlob(newXEnd)
-      //this.bar
       this.manageOverlapping()
       //this.onBarEvent({ event: e, type: 'drag' }, this)
     },
+
     dragByHandleLeft(e) {
       const chart = e.target.closest('.u-gantt-chart')
       if (!chart) return
       const newXStart = e.clientX - this.barsContainer.left
       const newStart = this.mapPositionToGlob(newXStart)
-      //console.log(this.barEndGlob - newStart)
       if (this.barEndGlob - newStart < this.chartProps.defaultBarLength || this.isPosOutOfDragRange(newXStart, null)) {
         return
       }
@@ -394,7 +386,6 @@ export default {
       if (!chart) return
       const newXEnd = e.clientX - this.barsContainer.left
       const newEnd = this.mapPositionToGlob(newXEnd)
-      //console.log(newEnd-this.barStartGlob)
       if (newEnd - this.barStartGlob < this.chartProps.defaultBarLength || this.isPosOutOfDragRange(null, newXEnd)) {
         return
       }
@@ -415,7 +406,6 @@ export default {
       if (newXEnd && this.dragLimitRight !== null && newXEnd > this.dragLimitRight - this.minGapBetweenBars) {
         return true
       }
-
       if (!this.chartProps.pushOnOverlap || this.barConfig.pushOnOverlap === false) {
         return false
       }
@@ -450,8 +440,8 @@ export default {
 
       return false
     },
+
     endDrag(e) {
-      //this.barConfig.noTooltip=false;
       let left = false,
         right = false,
         move = false
@@ -466,9 +456,6 @@ export default {
           move = true
           break
       }
-      //console.log('endDrag', { left, right, move })
-      //console.log(Array.from(this.movedBars.values()))
-      //console.log(this)
       if (this.isMainBarOfDrag && this.phantomMode) this.moveBarToOtherRow(this, e)
       this.offsetY = 0
       this.isDragging = false
@@ -477,7 +464,6 @@ export default {
       document.body.style.cursor = 'auto'
       window.removeEventListener('mousemove', this.mousemoveCallback)
       window.removeEventListener('mouseup', this.endDrag)
-
       if (this.isMainBarOfDrag) {
         this.barConfig.noTooltip = false
         this.phantomNewStart = null
@@ -525,12 +511,11 @@ export default {
         ;({ overlapBar, overlapType } = this.getOverlapBarAndType(overlapBar))
       }
     },
+
     getOverlapBarAndType(bar, barsArray) {
-      //console.log(bar)
       const barStartGlob = this.textToGlob(bar[this.barStartKey])
       const barEndGlob = this.textToGlob(bar[this.barEndKey])
       let overlapLeft, overlapRight, overlapInBetween, overlapBar
-      //console.log(barsArray)
       if (barsArray === undefined) {
         overlapBar = this.allBarsInRow.find(otherBar => {
           if (otherBar === bar || (otherBar[this.barConfigKey] && otherBar[this.barConfigKey].pushOnOverlap === false)) {

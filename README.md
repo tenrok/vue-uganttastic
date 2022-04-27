@@ -1,10 +1,10 @@
-# vue-uganttastic
+# Vue-UGanttastic
 
 ![screenshot](https://user-images.githubusercontent.com/4740535/143441452-386dbe75-2ce7-44c6-a0a4-b749a52d361d.png)
 
 A simple and easy-to-use Gantt chart component for Vue.js based on `Vue-Ganttastic`
 
-[DEMO](https://solodyagin.github.io/vue-uganttastic/)
+[Demo](http://vue-uganttastic.vercel.app/)
 
 ## Installation
 
@@ -139,6 +139,7 @@ The following code showcases a simple usage example in a .vue SFC (Single File C
 | bar-config-key       | `String`        | `config`                               |                                                                  |
 | bar-start-key        | `String`        | `start`                                | property name of the bar objects that represents the start units |
 | bar-end-key          | `String`        | `end`                                  | property name of the bar objects that represents the end units   |
+| global-bundles       | `String`        | `fixed`                                |                                                                  |
 | grid                 | `Boolean`       | `false`                                | hide/show grid                                                   |
 | grid-size            | `Number`        | `30`                                   | horizontal cell width in pixels                                  |
 | default-bar-length   | `Number`        | `1`                                    |                                                                  |
