@@ -1,17 +1,9 @@
 <template>
-  <div
-    ref="u-gantt-grid"
-    class="u-gantt-grid"
-    :style="{ left: `${rowLabelWidth}px`, width: `${allUnits.length * gridSize}px` }"
-  >
+  <div ref="u-gantt-grid" class="u-gantt-grid" :style="{ left: `${rowLabelWidth}px`, width: `${allUnits.length * gridSize}px` }">
     <div
       v-for="(unit, index) in allUnits"
       :key="index"
-      :class="[
-        'u-gantt-grid__line',
-        { 'u-gantt-grid-line-last': index === allUnits.length - 1 },
-        { 'u-gantt-grid-line-highlighted': isHighlighted(unit) }
-      ]"
+      :class="['u-gantt-grid__line', { 'u-gantt-grid-line-last': index === allUnits.length - 1 }, { 'u-gantt-grid-line-highlighted': isHighlighted(unit) }]"
       :style="{ width: `${gridSize}px` }"
     />
   </div>

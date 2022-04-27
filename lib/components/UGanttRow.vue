@@ -11,9 +11,9 @@
       :style="rowStyle"
       @click.self="$emit('click', $event)"
       @dblclick.self="onDoubleClick($event)"
-      @mouseover.self="onMouseover()"
-      @mouseleave="onMouseleave()"
-      @mouseout="onMouseout($event)"
+      @mouseover.self="onMouseOver()"
+      @mouseleave="onMouseLeave()"
+      @mouseout="onMouseOut($event)"
     >
       <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
         <template #bar-label="{ bar }">
@@ -108,28 +108,30 @@ export default {
   },
 
   methods: {
-    /*   onDragover(e) {
-      e.preventDefault()
-      // enables dropping content on row
-      if (this.highlightOnHover) {
-        this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
-      }
-    },
- */
-    /*     onDragleave() {
-      console.log(this.data())
-      this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
-    }, */
+    // onDragover(e) {
+    //   e.preventDefault()
+    //   // enables dropping content on row
+    //   if (this.highlightOnHover) {
+    //     this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
+    //   }
+    // },
 
-    /*     onDrop(e) {
-      const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
-      const xPos = e.clientX - barsContainer.left
-      const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
-      const time = timeDiffFromStart
-      const bar = this.localBars.find(bar => time >= this.textToGlob(bar[this.chartProps.barStartKey]) && time <= this.textToGlob(bar[this.chartProps.barEndKey]))
-      //this.$emit('drop', { event: e, bar, time })
-      console.log(e)
-    }, */
+    // onDragleave() {
+    //   this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
+    // },
+
+    // onDrop(e) {
+    //   const barsContainer = this.$refs['bars-container'].getBoundingClientRect()
+    //   const xPos = e.clientX - barsContainer.left
+    //   const timeDiffFromStart = (xPos / barsContainer.width) * this.allUnits.length
+    //   const time = timeDiffFromStart
+    //   const bar = this.localBars.find(
+    //     bar =>
+    //       time >= this.textToGlob(bar[this.chartProps.barStartKey]) &&
+    //       time <= this.textToGlob(bar[this.chartProps.barEndKey])
+    //   )
+    //   //this.$emit('drop', { event: e, bar, time })
+    // },
 
     onDoubleClick(e) {
       if (this.chartProps.allowAdd) {
@@ -147,16 +149,17 @@ export default {
       this.$emit('dblclick', e)
     },
 
-    onMouseover() {
+    onMouseOver() {
       if (this.highlightOnHover) {
         this.$refs['u-gantt-row'].classList.add('u-gantt-row-highlighted')
       }
     },
 
-    onMouseleave() {
+    onMouseLeave() {
       this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted')
     },
-    onMouseout(e) {
+
+    onMouseOut(e) {
       if (e.relatedTarget !== null) {
         e.relatedTarget.classList.contains('u-gantt-bar__tooltip') ? this.$refs['u-gantt-row'].classList.remove('u-gantt-row-highlighted') : NaN
       }

@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="u-gantt-timeaxis"
-    class="u-gantt-timeaxis"
-    :style="{ width: `${rowLabelWidth + allUnits.length * gridSize}px` }"
-  >
+  <div ref="u-gantt-timeaxis" class="u-gantt-timeaxis" :style="{ width: `${rowLabelWidth + allUnits.length * gridSize}px` }">
     <div class="u-gantt-timeaxis__empty-space" :style="{ minWidth: `${rowLabelWidth}px` }" />
     <div class="u-gantt-timeaxis__points">
       <div v-for="(point, index) in axisPoints" :key="`point-${index}`" class="u-gantt-timeaxis__point">
@@ -11,12 +7,7 @@
           <span :title="point.label">{{ point.label }}</span>
         </div>
         <div class="u-gantt-timeaxis__units">
-          <div
-            v-for="(unit, index) in point.units"
-            :key="`unit-${index}`"
-            class="u-gantt-timeaxis__unit"
-            :style="{ width: `${gridSize}px` }"
-          >
+          <div v-for="(unit, index) in point.units" :key="`unit-${index}`" class="u-gantt-timeaxis__unit" :style="{ width: `${gridSize}px` }">
             <span :style="{ fontSize: unitFontSize }">{{ unit.label }}</span>
             <div class="u-gantt-timeaxis__unit-pin" />
           </div>
