@@ -1,6 +1,6 @@
 {
   "name": "vue-uganttastic",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
   "keywords": [
     "gantt",
@@ -10,9 +10,9 @@
     "vue",
     "vuejs"
   ],
-  "homepage": "https://github.com/solodyagin/vue-uganttastic#readme",
+  "homepage": "https://github.com/tenrok/vue-uganttastic#readme",
   "bugs": {
-    "url": "https://github.com/solodyagin/vue-uganttastic/issues"
+    "url": "https://github.com/tenrok/vue-uganttastic/issues"
   },
   "license": "MIT",
   "author": {
@@ -40,7 +40,10 @@
   "main": "dist/vue-uganttastic.common.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/solodyagin/vue-uganttastic.git"
+    "url": "git+https://github.com/tenrok/vue-uganttastic.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "serve": "vue-cli-service serve --open",
