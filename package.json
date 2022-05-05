@@ -1,6 +1,6 @@
 {
   "name": "vue-uganttastic",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
   "keywords": [
     "gantt",
@@ -10,24 +10,28 @@
     "vue",
     "vuejs"
   ],
-  "homepage": "https://github.com/solodyagin/vue-uganttastic#readme",
+  "homepage": "https://github.com/tenrok/vue-uganttastic#readme",
   "bugs": {
-    "url": "https://github.com/solodyagin/vue-uganttastic/issues"
+    "url": "https://github.com/tenrok/vue-uganttastic/issues"
   },
   "license": "MIT",
   "author": {
-    "name": "Marko Zunic",
-    "email": "marko.zunic06@gmail.com",
-    "url": "https://github.com/InfectoOne"
+    "name": "Sergey Solodyagin",
+    "url": "https://github.com/solodyagin"
   },
   "contributors": [
+    {
+      "name": "Marko Zunic",
+      "email": "marko.zunic06@gmail.com",
+      "url": "https://github.com/InfectoOne"
+    },
     {
       "name": "Yicone Wong",
       "url": "https://github.com/yicone"
     },
     {
-      "name": "Sergey Solodyagin",
-      "url": "https://github.com/solodyagin"
+      "name": "rat1borik",
+      "url": "https://github.com/rat1borik"
     }
   ],
   "files": [
@@ -36,12 +40,14 @@
   "main": "dist/vue-uganttastic.common.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/solodyagin/vue-uganttastic.git"
+    "url": "git+https://github.com/tenrok/vue-uganttastic.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "serve": "vue-cli-service serve --open",
     "demo:build": "vue-cli-service build",
-    "demo:buildAndDeploy": "vue-cli-service build deploy.bat",
     "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js",
     "lint": "vue-cli-service lint"
   },

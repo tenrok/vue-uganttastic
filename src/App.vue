@@ -9,7 +9,7 @@
       bar-end-key="end"
       bar-config-key="config"
       :bundles="bundles"
-      :globalBundles="globalBundles"
+      :global-bundles="globalBundles"
       :no-tooltip="noTooltip"
       :grid="grid"
       :grid-size="gridSize"
@@ -256,7 +256,19 @@ export default {
       }
     ],
     theme: 'default',
-    themes: ['creamy', 'crimson', 'dark', 'default', 'flare', 'fuchsia', 'grove', 'material-blue', 'sky', 'slumber', 'vue']
+    themes: [
+      'creamy',
+      'crimson',
+      'dark',
+      'default',
+      'flare',
+      'fuchsia',
+      'grove',
+      'material-blue',
+      'sky',
+      'slumber',
+      'vue'
+    ]
   }),
 
   methods: {
