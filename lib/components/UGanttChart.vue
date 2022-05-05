@@ -243,10 +243,8 @@ export default {
           const barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bundleBar.bar).$parent
           return (
             bundleBar === gGanttBar ||
-            gGanttBar.getOverlapBarAndType(
-              bundleBar.bar,
-              ganttRowChildrenList[ganttRowChildrenList.findIndex(el => el === barParent)].localBars.overlapBar === undefined || gGanttBar.barConfig.pushOnOverlap === false
-            )
+            gGanttBar.getOverlapBarAndType(bundleBar.bar, ganttRowChildrenList[ganttRowChildrenList.findIndex(el => el === barParent)].localBars).overlapBar === undefined ||
+            gGanttBar.barConfig.pushOnOverlap === false
           )
         })
         if (
@@ -376,7 +374,7 @@ export default {
     onDragendBar(e, ganttBar, action) {
       const movedBars = this.movedBarsInDrag
       if (!ganttBar.phantomMode && !ganttBar.phantomChild) {
-        this.magnetize(ganttBar, action)
+        ganttBar.bundleBars.forEach(bar => this.magnetize(bar, action))
         this.snapBackBundleIfNeeded(ganttBar)
       } else {
         ganttBar.phantomMode = false
@@ -384,39 +382,37 @@ export default {
       }
       ganttBar.bundleBars = null
 
-      if (movedBars.size !== 0) {
-        this.$emit('dragend-bar', { event: e, bar: ganttBar.bar, movedBars, barMoveToThread: ganttBar.newRowThreadId })
-        this.movedBarsInDrag = new Set()
-        return
-      }
+      if (movedBars.size !== 0) this.$emit('dragend-bar', { event: e, bar: ganttBar.bar, movedBars, barMoveToThread: ganttBar.newRowThreadId })
       this.movedBarsInDrag = new Set()
     },
 
     magnetize(magnetBar, action) {
-      if (action !== undefined) {
-        const { left, right } = action
-        if (left) {
-          if (this.textToGlob(magnetBar.bar[this.barStartKey]) % 1 < 0.5) {
-            magnetBar.bar[this.barStartKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
-          } else {
-            magnetBar.bar[this.barStartKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
+      if (this.isMagnetic) {
+        if (action !== undefined) {
+          const { left, right } = action
+          if (left) {
+            if (this.textToGlob(magnetBar.bar[this.barStartKey]) % 1 < 0.5) {
+              magnetBar.bar[this.barStartKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
+            } else {
+              magnetBar.bar[this.barStartKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
+            }
+            return
+          } else if (right) {
+            if (this.textToGlob(magnetBar.bar[this.barEndKey]) % 1 < 0.5) {
+              magnetBar.bar[this.barEndKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
+            } else {
+              magnetBar.bar[this.barEndKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
+            }
+            return
           }
-          return
-        } else if (right) {
-          if (this.textToGlob(magnetBar.bar[this.barEndKey]) % 1 < 0.5) {
-            magnetBar.bar[this.barEndKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
-          } else {
-            magnetBar.bar[this.barEndKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
-          }
-          return
         }
-      }
-      if (this.textToGlob(magnetBar.bar[this.barStartKey]) % 1 < 0.5) {
-        magnetBar.bar[this.barStartKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
-        magnetBar.bar[this.barEndKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
-      } else {
-        magnetBar.bar[this.barStartKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
-        magnetBar.bar[this.barEndKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
+        if (this.textToGlob(magnetBar.bar[this.barStartKey]) % 1 < 0.5) {
+          magnetBar.bar[this.barStartKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
+          magnetBar.bar[this.barEndKey] = this.globToText(Math.floor(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
+        } else {
+          magnetBar.bar[this.barStartKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barStartKey])), 'start')
+          magnetBar.bar[this.barEndKey] = this.globToText(Math.round(this.textToGlob(magnetBar.bar[this.barEndKey])), 'end')
+        }
       }
     },
 

@@ -474,8 +474,10 @@ export default {
     },
 
     snapBack() {
-      this.barStartGlob = this.barStartBeforeDrag
-      this.barEndGlob = this.barEndBeforeDrag
+      if (this.barConfig.pushOnOverlap !== false) {
+        this.barStartGlob = this.barStartBeforeDrag
+        this.barEndGlob = this.barEndBeforeDrag
+      }
     },
 
     manageOverlapping() {
