@@ -77,7 +77,9 @@ export default {
     'textToGlob',
     'moveBarToOtherRow',
     'getMovedBars',
-    'checkBarMoving'
+    'checkBarMoving',
+    'invokeShowHiddenRows',
+    'invokeHideHiddenRows'
   ],
 
   data() {
@@ -341,18 +343,27 @@ export default {
       const chart = e.target.closest('.u-gantt-chart')
       if (!chart || !this.$refs['u-gantt-bar']) return
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
-      const newXStart = +e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
+      const newXStart = e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
       if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.$parent.barsContainer.top - this.chartProps.rowHeight / 2
 
       if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
+        this.offsetY = 0
         this.phantomMode = true
+        // const initialY = this.$parent.$refs['bars-container'].getBoundingClientRect().top
+        this.invokeShowHiddenRows(this.$parent.groupThreadId)
+        this.$nextTick(() => {
+          //   this.parentOffset = this.$parent.$refs['bars-container'].getBoundingClientRect().top - initialY
+          this.phantomY = e.clientY - this.cursorOffsetY - this.$parent.barsContainer.top //- this.parentOffset
+          this.phantomX = e.clientX - this.cursorOffsetX - this.$parent.barsContainer.left
+        })
         this.bundleBars.forEach(el => (el.phantomChild = true))
         this.barConfig.noTooltip = true
+        return
       }
       if (this.phantomMode) {
-        this.phantomX = e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
-        this.phantomY = e.clientY - this.$parent.barsContainer.top - this.cursorOffsetY
+        this.phantomX = e.clientX - this.cursorOffsetX - this.$parent.barsContainer.left
+        this.phantomY = e.clientY - this.cursorOffsetY - this.$parent.barsContainer.top // - this.parentOffset
         this.phantomCursorType = this.checkBarMoving(this, e)
         this.phantomNewStart = this.mapPositionToGlob(newXStart)
         this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
@@ -457,7 +468,7 @@ export default {
           break
       }
       if (this.isMainBarOfDrag && this.phantomMode) this.moveBarToOtherRow(this, e)
-      this.offsetY = 0
+
       this.isDragging = false
       this.dragLimitLeft = null
       this.dragLimitRight = null
@@ -469,6 +480,8 @@ export default {
         this.phantomNewStart = null
         this.phantomNewEnd = null
         this.isMainBarOfDrag = false
+        this.invokeHideHiddenRows()
+        this.$nextTick((this.offsetY = 0))
         this.onDragendBar(e, this, { left, right, move })
       }
     },

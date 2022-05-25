@@ -53,7 +53,8 @@ export default {
   data: () => ({
     movedBarsInDrag: new Set(),
     timemarkerOffset: 0,
-    rowOffset: 0
+    rowOffset: 0,
+    showHiddenRows: null
   }),
 
   updated() {
@@ -80,7 +81,7 @@ export default {
   methods: {
     onScroll() {
       this.$children.filter(childComp => childComp.$options.name === UGanttRow.name).forEach(row => row.onWindowResize())
-      // It is necessary for avoiding bug with disposion cursor and moving bar
+      // It is necessary for avoiding bug with disposition cursor and moving bar
     },
 
     checkBarMoving(gGanttBar, e) {
@@ -109,7 +110,7 @@ export default {
       this.rowOffset = 0
       const selectedRow = ganttRowChildrenList.find(el => {
         const rect = el.$refs['u-gantt-row'].getBoundingClientRect()
-        return rect.top < e.clientY && rect.left < e.clientX && rect.top + rect.height > e.clientY && rect.left + rect.width > e.clientX
+        return rect.top <= e.clientY && rect.left <= e.clientX && rect.top + rect.height >= e.clientY && rect.left + rect.width >= e.clientX
       })
 
       // defining row that contains cursor
@@ -580,8 +581,19 @@ export default {
       } else {
         return null
       }
+    },
+    invokeShowHiddenRows(groupThreadId) {
+      if (!this.showHiddenRows) {
+        this.showHiddenRows = groupThreadId
+        this.$nextTick(() => this.onScroll())
+      }
+    },
+    invokeHideHiddenRows() {
+      if (this.showHiddenRows) {
+        this.showHiddenRows = null
+        this.$nextTick(() => this.onScroll())
+      }
     }
-
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
@@ -600,7 +612,9 @@ export default {
       setDragLimitsOfGanttBar: ganttBar => this.setDragLimitsOfGanttBar(ganttBar),
       textToGlob: abbr => this.textToGlob(abbr),
       moveBarToOtherRow: (gGanttBar, e) => this.moveBarToOtherRow(gGanttBar, e),
-      checkBarMoving: (gGanttBar, e) => this.checkBarMoving(gGanttBar, e)
+      checkBarMoving: (gGanttBar, e) => this.checkBarMoving(gGanttBar, e),
+      invokeShowHiddenRows: groupThreadId => this.invokeShowHiddenRows(groupThreadId),
+      invokeHideHiddenRows: () => this.invokeHideHiddenRows()
     }
   }
 }

@@ -1,25 +1,27 @@
 <template>
-  <div ref="u-gantt-row" class="u-gantt-row" :style="{ height: `${chartProps.rowHeight}px` }" v-on="$listeners">
-    <div class="u-gantt-row__label" :style="rowLabelStyle">
-      <span :title="label">
-        <slot name="label">{{ label }}</slot>
-      </span>
-    </div>
-    <div
-      ref="bars-container"
-      class="u-gantt-row__bars-container"
-      :style="rowStyle"
-      @click.self="$emit('click', $event)"
-      @dblclick.self="onDoubleClick($event)"
-      @mouseover.self="onMouseOver()"
-      @mouseleave="onMouseLeave()"
-      @mouseout="onMouseOut($event)"
-    >
-      <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
-        <template #bar-label="{ bar }">
-          <slot name="bar-label" :bar="bar" />
-        </template>
-      </u-gantt-bar>
+  <div>
+    <div v-show="threadId == 0 || bars.length > 0 || $parent.showHiddenRows === groupThreadId" ref="u-gantt-row" class="u-gantt-row" :style="{ height: `${chartProps.rowHeight}px` }" v-on="$listeners">
+      <div class="u-gantt-row__label" :style="rowLabelStyle">
+        <span :title="label">
+          <slot name="label">{{ label }}</slot>
+        </span>
+      </div>
+      <div
+        ref="bars-container"
+        class="u-gantt-row__bars-container"
+        :style="rowStyle"
+        @click.self="$emit('click', $event)"
+        @dblclick.self="onDoubleClick($event)"
+        @mouseover.self="onMouseOver()"
+        @mouseleave="onMouseLeave()"
+        @mouseout="onMouseOut($event)"
+      >
+        <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
+          <template #bar-label="{ bar }">
+            <slot name="bar-label" :bar="bar" />
+          </template>
+        </u-gantt-bar>
+      </div>
     </div>
   </div>
 </template>

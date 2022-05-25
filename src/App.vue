@@ -25,8 +25,8 @@
       @dragend-bar="onDragend($event)"
     >
       <u-gantt-row
-        v-for="row in rows"
-        :key="row.label"
+        v-for="(row, idx) in rows"
+        :key="`u-gantt-row-${idx}`"
         :bars="row.bars"
         :highlight-on-hover="highlightOnHover"
         :label="row.label"
@@ -123,7 +123,18 @@ export default {
               handles: true
             }
           }
-        ]
+        ],
+        groupThreadId: '0',
+        threadId: '1'
+      },
+      {
+        label: '2/2',
+        labelStyle: {
+          justifyContent: 'end'
+        },
+        bars: [],
+        groupThreadId: '0',
+        threadId: '2'
       },
       {
         label: 'Group 1',
@@ -162,7 +173,7 @@ export default {
         threadId: '1'
       },
       {
-        label: '2/3',
+        label: '2/4',
         labelStyle: {
           justifyContent: 'end'
         },
@@ -206,7 +217,16 @@ export default {
         threadId: '2'
       },
       {
-        label: '3/3',
+        label: '3/4',
+        labelStyle: {
+          justifyContent: 'end'
+        },
+        bars: [],
+        groupThreadId: '1',
+        threadId: '3'
+      },
+      {
+        label: '4/4',
         labelStyle: {
           justifyContent: 'end'
         },
@@ -235,11 +255,22 @@ export default {
           }
         ],
         groupThreadId: '1',
-        threadId: '3'
+        threadId: '4'
       },
       {
         label: 'Group 2',
-        bars: [],
+        bars: [
+          {
+            start: 'group1, 3',
+            end: 'group2, 8',
+            label: 'I`m so lone... (dblclck on empty space)',
+            tooltip: 'Bar tooltip',
+            config: {
+              color: 'white',
+              backgroundColor: '#000000'
+            }
+          }
+        ],
         style: {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',
           backgroundSize: '1em 1em'
@@ -256,19 +287,7 @@ export default {
       }
     ],
     theme: 'default',
-    themes: [
-      'creamy',
-      'crimson',
-      'dark',
-      'default',
-      'flare',
-      'fuchsia',
-      'grove',
-      'material-blue',
-      'sky',
-      'slumber',
-      'vue'
-    ]
+    themes: ['creamy', 'crimson', 'dark', 'default', 'flare', 'fuchsia', 'grove', 'material-blue', 'sky', 'slumber', 'vue']
   }),
 
   methods: {
