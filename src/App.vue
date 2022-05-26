@@ -20,6 +20,7 @@
       :push-on-overlap="pushOnOverlap"
       :row-height="rowHeight"
       :row-label-width="rowLabelWidth"
+      :start-thread-id="startThreadId"
       snap-back-on-overlap
       :theme="theme"
       @dragend-bar="onDragend($event)"
@@ -95,6 +96,7 @@ export default {
     pushOnOverlap: false,
     rowHeight: 40,
     rowLabelWidth: 200,
+    startThreadId: '1',
     rows: [
       {
         label: 'Group 0',
@@ -275,7 +277,8 @@ export default {
           background: 'linear-gradient(-45deg, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 52%)',
           backgroundSize: '1em 1em'
         },
-        groupThreadId: '2'
+        groupThreadId: '2',
+        threadId: '1'
       },
       {
         label: '2/2',
@@ -283,7 +286,8 @@ export default {
           justifyContent: 'end'
         },
         bars: [],
-        groupThreadId: '2'
+        groupThreadId: '2',
+        threadId: '2'
       }
     ],
     theme: 'default',

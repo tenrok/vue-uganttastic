@@ -44,6 +44,7 @@ export default {
     pushOnOverlap: { type: Boolean },
     rowHeight: { type: Number, default: 40 },
     rowLabelWidth: { type: Number, default: 200 },
+    startThreadId: { type: String, default: '1' },
     snapBackOnOverlap: { type: Boolean },
     theme: { type: String, default: 'default' },
     tooltipFormat: { type: String, default: '{start} - {end} duration: {duration}' },

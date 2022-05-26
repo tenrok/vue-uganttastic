@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div v-show="threadId == 0 || bars.length > 0 || $parent.showHiddenRows === groupThreadId" ref="u-gantt-row" class="u-gantt-row" :style="{ height: `${chartProps.rowHeight}px` }" v-on="$listeners">
+    <div
+      v-show="threadId === chartProps.startThreadId || bars.length > 0 || $parent.showHiddenRows === groupThreadId"
+      ref="u-gantt-row"
+      class="u-gantt-row"
+      :style="{ height: `${chartProps.rowHeight}px` }"
+      v-on="$listeners"
+    >
       <div class="u-gantt-row__label" :style="rowLabelStyle">
         <span :title="label">
           <slot name="label">{{ label }}</slot>
