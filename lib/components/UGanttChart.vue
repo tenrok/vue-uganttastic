@@ -61,7 +61,9 @@ export default {
   updated() {
     this.onScroll()
   },
-
+  activated() {
+    this.onScroll()
+  },
   computed: {
     allUnits() {
       const res = []
@@ -111,6 +113,7 @@ export default {
       this.rowOffset = 0
       const selectedRow = ganttRowChildrenList.find(el => {
         const rect = el.$refs['u-gantt-row'].getBoundingClientRect()
+        if (!rect) return false
         return rect.top <= e.clientY && rect.left <= e.clientX && rect.top + rect.height >= e.clientY && rect.left + rect.width >= e.clientX
       })
 
@@ -173,6 +176,7 @@ export default {
       this.rowOffset = 0
       const selectedRow = ganttRowChildrenList.find(el => {
         const rect = el.$refs['u-gantt-row'].getBoundingClientRect()
+        if (!rect) return false
         return rect.top < e.clientY && rect.left < e.clientX && rect.top + rect.height > e.clientY && rect.left + rect.width > e.clientX
       })
 

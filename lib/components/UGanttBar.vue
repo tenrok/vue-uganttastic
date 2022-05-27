@@ -345,7 +345,7 @@ export default {
       const barWidth = this.$refs['u-gantt-bar'].getBoundingClientRect().width
       const newXStart = e.clientX - this.$parent.barsContainer.left - this.cursorOffsetX
       const newXEnd = newXStart + barWidth
-      if (!this.phantomMode) this.offsetY = chart.scrollTop + e.clientY - this.$parent.barsContainer.top - this.chartProps.rowHeight / 2
+      if (!this.phantomMode) this.offsetY = e.clientY - this.$parent.barsContainer.top - this.chartProps.rowHeight / 2
 
       if (!this.phantomMode && this.isMainBarOfDrag && Math.abs(this.offsetY) > this.chartProps.rowHeight / 2) {
         this.offsetY = 0
