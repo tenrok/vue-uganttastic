@@ -11,7 +11,7 @@ A simple and easy-to-use Gantt chart component for Vue.js based on `Vue-Ganttast
 You can install and use Vue-UGanttastic in your project using <kbd>npm</kbd>:
 
 ```
-npm install vue-uganttastic
+npm install @tenrok/vue-uganttastic
 ```
 
 ## Basic Usage

@@ -86,13 +86,13 @@ export default {
     },
 
     checkBarMoving(gGanttBar, e) {
-      let isFixed = undefined
-      if (gGanttBar.barConfig.bundle !== undefined) {
+      let isFixed
+      if (gGanttBar.barConfig.bundle) {
         let type
         if (this.bundles.length !== 0) {
           type = this.bundles.find(bundle => bundle.key === gGanttBar.barConfig.bundle).value
         }
-        if (type === undefined) {
+        if (!type) {
           type = this.globalBundles
         }
         switch (type) {
@@ -115,7 +115,7 @@ export default {
       })
 
       // defining row that contains cursor
-      if (selectedRow === undefined) return 'not-allowed'
+      if (!selectedRow) return 'not-allowed'
 
       this.rowOffset = ganttRowChildrenList.findIndex(el => el === selectedRow) - ganttRowChildrenList.findIndex(el => el === parent)
 
@@ -149,12 +149,12 @@ export default {
 
     moveBarToOtherRow(gGanttBar, e) {
       let isFixed
-      if (gGanttBar.barConfig.bundle !== undefined) {
+      if (gGanttBar.barConfig.bundle) {
         let type
         if (this.bundles.length !== 0) {
           type = this.bundles.find(bundle => bundle.key === gGanttBar.barConfig.bundle).value
         }
-        if (type === undefined) {
+        if (!type) {
           type = this.globalBundles
         }
         switch (type) {
@@ -177,7 +177,7 @@ export default {
       })
 
       // defining row that contains cursor
-      if (selectedRow === undefined) {
+      if (!selectedRow) {
         this.snapBackBundle(gGanttBar)
         return
       }
@@ -311,7 +311,7 @@ export default {
     },
 
     getBarsFromBundle(bundleId) {
-      if (bundleId === undefined || bundleId === null) {
+      if (!bundleId) {
         return []
       }
       return this.getGanttBarChildrenList().filter(ganttBarChild => ganttBarChild.barConfig.bundle === bundleId)
@@ -323,7 +323,7 @@ export default {
       gGanttBar.initDrag(e)
       this.movedBarsInDrag.add(gGanttBar.bar)
       bundle.push(gGanttBar)
-      if (gGanttBar.barConfig.bundle !== null && gGanttBar.barConfig.bundle !== undefined) {
+      if (gGanttBar.barConfig.bundle) {
         this.getGanttBarChildrenList().forEach(ganttBarChild => {
           if (ganttBarChild.barConfig.bundle === gGanttBar.barConfig.bundle && ganttBarChild !== gGanttBar) {
             ganttBarChild.initDrag(e)
@@ -337,8 +337,8 @@ export default {
 
     moveBarsFromBundleOfPushedBar(pushedBar, diff, overlapType) {
       this.movedBarsInDrag.add(pushedBar)
-      let bundleId = pushedBar[this.barConfigKey] ? pushedBar[this.barConfigKey].bundle : null
-      if (bundleId === undefined || bundleId === null) {
+      const bundleId = pushedBar[this.barConfigKey] ? pushedBar[this.barConfigKey].bundle : null
+      if (!bundleId) {
         return
       }
       this.getGanttBarChildrenList().forEach(ganttBarChild => {
@@ -390,7 +390,7 @@ export default {
 
     magnetize(magnetBar, action) {
       if (this.isMagnetic) {
-        if (action !== undefined) {
+        if (action) {
           const { left, right } = action
           if (left) {
             if (this.textToGlob(magnetBar.bar[this.barStartKey]) % 1 < 0.5) {
