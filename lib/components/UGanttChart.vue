@@ -64,6 +64,7 @@ export default {
   activated() {
     this.onScroll()
   },
+
   computed: {
     allUnits() {
       const res = []
@@ -388,7 +389,8 @@ export default {
       }
       ganttBar.bundleBars = null
 
-      if (movedBars.size !== 0) this.$emit('dragend-bar', { event: e, bar: ganttBar.bar, movedBars: null, barMoveToThread: ganttBar.newRowThreadId })
+      if (movedBars.size !== 0) this.$emit('dragend-bar', { event: e, bar: ganttBar.bar, movedBars, barMoveToThread: ganttBar.newRowThreadId })
+      ganttBar.newRowThreadId = null
       this.movedBarsInDrag = new Set()
     },
 

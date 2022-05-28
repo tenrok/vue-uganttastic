@@ -7,7 +7,6 @@
       @mouseenter.stop="onMouseEnter($event)"
       @mouseleave.stop="onMouseLeave($event)"
       @mousedown.stop="onMouseDown($event)"
-      @click.stop="onClick($event)"
       @dblclick="onDoubleClick($event)"
       @contextmenu="onContextMenu($event)"
     >
@@ -108,7 +107,9 @@ export default {
       newRowThreadId: null
     }
   },
-
+  mounted() {
+    this.$el.addEventListener('click', this.onClick)
+  },
   computed: {
     movedBars() {
       return this.getMovedBars()
@@ -265,6 +266,7 @@ export default {
     },
 
     onClick(e) {
+      console.log('clicked')
       const time = this.mapPositionToGlob(e.clientX - this.barsContainer.left)
       this.onBarEvent({ event: e, type: e.type, time }, this)
     },
@@ -285,9 +287,16 @@ export default {
         // initialize the dragging on next mousemove event:
         window.addEventListener('mousemove', this.onFirstMouseMove, { once: true })
         // if next mousemove happens after mouse up (if user just presses mouse button down, then up, without moving):
-        window.addEventListener('mouseup', () => window.removeEventListener('mousemove', this.onFirstMouseMove), {
-          once: true
-        })
+        window.addEventListener(
+          'mouseup',
+          () => {
+            window.removeEventListener('mousemove', this.onFirstMouseMove)
+            setTimeout(() => this.$el.addEventListener('click', this.onClick), 200)
+          },
+          {
+            once: true
+          }
+        )
       }
       const time = this.mapPositionToGlob(e.clientX - this.barsContainer.left)
       this.onBarEvent({ event: e, type: e.type, time }, this)
@@ -329,6 +338,7 @@ export default {
         default:
           this.mousemoveCallback = this.drag
       }
+      this.$el.removeEventListener('click', this.onClick)
       window.addEventListener('mousemove', this.mousemoveCallback)
       window.addEventListener('mouseup', this.endDrag)
     },
@@ -362,11 +372,17 @@ export default {
         return
       }
       if (this.phantomMode) {
-        this.phantomX = e.clientX - this.cursorOffsetX - this.$parent.barsContainer.left
-        this.phantomY = e.clientY - this.cursorOffsetY - this.$parent.barsContainer.top // - this.parentOffset
+        const pXStart = e.clientX - this.cursorOffsetX - this.$parent.barsContainer.left
+        const pXEnd = pXStart + barWidth
+        const pYStart = e.clientY - this.cursorOffsetY - this.$parent.barsContainer.top
+        if (!this.isPosOutOfDragRange(pXStart, pXEnd)) {
+          this.phantomX = pXStart
+
+          this.phantomNewStart = this.mapPositionToGlob(pXStart)
+          this.phantomNewEnd = this.mapPositionToGlob(pXEnd)
+        }
+        this.phantomY = pYStart
         this.phantomCursorType = this.checkBarMoving(this, e)
-        this.phantomNewStart = this.mapPositionToGlob(newXStart)
-        this.phantomNewEnd = this.mapPositionToGlob(newXEnd)
         //this.onBarEvent({ event: e, type: 'drag' }, this)
         return
       }
@@ -403,12 +419,20 @@ export default {
       this.barEndGlob = newEnd
       this.manageOverlapping()
     },
-
+    // outOfRangeStick(newXStart, newXEnd) {
+    //   if (newXStart && newXStart < 0) {
+    //     return 0, newXEnd
+    //   }
+    //   if (newXEnd && newXEnd > this.barsContainer.width) {
+    //     return newXStart, this.barsContainer.width
+    //   }
+    //   return null
+    // },
     isPosOutOfDragRange(newXStart, newXEnd) {
       if (newXStart && newXStart < 0) {
         return true
       }
-      if (newXEnd > this.barsContainer.width) {
+      if (newXEnd && newXEnd > this.barsContainer.width) {
         return true
       }
       if (newXStart && this.dragLimitLeft !== null && newXStart < this.dragLimitLeft + this.minGapBetweenBars) {
@@ -420,7 +444,6 @@ export default {
       if (!this.chartProps.pushOnOverlap || this.barConfig.pushOnOverlap === false) {
         return false
       }
-
       const isSqueezeToLeft = newXStart && this.textToGlob(this.localBar[this.barStartKey]) < this.barStartBeforeDrag
       const isSqueezeToRight = newXEnd && this.textToGlob(this.localBar[this.barEndKey]) > this.barEndBeforeDrag
 
@@ -451,7 +474,6 @@ export default {
 
       return false
     },
-
     endDrag(e) {
       let left = false,
         right = false,
