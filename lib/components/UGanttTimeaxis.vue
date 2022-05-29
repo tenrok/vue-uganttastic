@@ -69,7 +69,7 @@ export default {
     window.addEventListener('dragover', this.moveTimemarker)
   },
 
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('mousemove', this.moveTimemarker)
     window.removeEventListener('dragover', this.moveTimemarker)

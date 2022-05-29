@@ -84,7 +84,8 @@ export default {
 
   methods: {
     onScroll() {
-      this.$children.filter(childComp => childComp.$options.name === UGanttRow.name).forEach(row => row.onWindowResize())
+      console.log(this.$root.$refs.UGanttRows)
+      this.$root.$refs.UGanttRows.forEach(row => row.onWindowResize())
       // It is necessary for avoiding bug with disposition cursor and moving bar
     },
 

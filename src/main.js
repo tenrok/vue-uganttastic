@@ -1,12 +1,8 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import { UGanttChart, UGanttRow } from '../lib'
 
-Vue.component('UGanttChart', UGanttChart)
-Vue.component('UGanttRow', UGanttRow)
+//Vue.config.productionTip = false
 
-Vue.config.productionTip = false
+createApp(App).component('UGanttChart', UGanttChart).component('UGanttRow', UGanttRow).mount('#app')
 
-new Vue({
-  render: h => h(App)
-}).$mount('#app')

@@ -2,10 +2,10 @@
   <div>
     <div
       v-show="threadId === chartProps.startThreadId || bars.length > 0 || $parent.showHiddenRows === groupThreadId"
-      ref="u-gantt-row"
+      ref="UGanttRows"
       class="u-gantt-row"
       :style="{ height: `${chartProps.rowHeight}px` }"
-      v-on="$listeners"
+      v-on="$attrs"
     >
       <div class="u-gantt-row__label" :style="rowLabelStyle">
         <span :title="label">
@@ -99,8 +99,11 @@ export default {
       this.barsContainer = this.$refs['bars-container'].getBoundingClientRect()
     },
 
-    bars(value) {
-      this.localBars = value
+    bars: {
+      handler(value) {
+        this.localBars = value
+      },
+      deep: true
     }
   },
 
@@ -110,7 +113,7 @@ export default {
     window.addEventListener('scroll', this.onWindowResize)
   },
 
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('scroll', this.onWindowResize)
   },

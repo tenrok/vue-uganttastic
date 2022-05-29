@@ -1,23 +1,41 @@
 {
   "name": "@tenrok/vue-uganttastic",
   "version": "0.1.4",
+  "private": false,
   "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
-  "keywords": [
-    "gantt",
-    "chart",
-    "bar",
-    "diagram",
-    "vue",
-    "vuejs"
-  ],
-  "homepage": "https://github.com/tenrok/vue-uganttastic#readme",
-  "bugs": {
-    "url": "https://github.com/tenrok/vue-uganttastic/issues"
-  },
-  "license": "MIT",
   "author": {
     "name": "Sergey Solodyagin",
     "url": "https://github.com/solodyagin"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "lint": "vue-cli-service lint",
+    "demo:build": "vue-cli-service build",
+    "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js"
+  },
+  "main": "dist/vue-uganttastic.common.js",
+  "files": [
+    "dist/vue-uganttastic.*"
+  ],
+  "dependencies": {
+    "vue": "^3.2.25",
+    "core-js": "^3.6.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/compiler-sfc": "^3.1.0-0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0"
+
+  },
+  "bugs": {
+    "url": "https://github.com/tenrok/vue-uganttastic/issues"
   },
   "contributors": [
     {
@@ -34,33 +52,18 @@
       "url": "https://github.com/rat1borik"
     }
   ],
-  "files": [
-    "dist/vue-uganttastic.*"
+  "homepage": "https://github.com/tenrok/vue-uganttastic#readme",
+  "keywords": [
+    "gantt",
+    "chart",
+    "bar",
+    "diagram",
+    "vue",
+    "vuejs"
   ],
-  "main": "dist/vue-uganttastic.common.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tenrok/vue-uganttastic.git"
-  },
-  "private": false,
-  "scripts": {
-    "serve": "vue-cli-service serve --open",
-    "demo:build": "vue-cli-service build",
-    "lib:build": "vue-cli-service build --target lib --name vue-uganttastic lib/index.js",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "vue": "^2.6.12"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.17",
-    "@vue/cli-plugin-eslint": "~4.5.17",
-    "@vue/cli-service": "~4.5.17",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^9.0.1",
-    "sass": "^1.52.1",
-    "sass-loader": "^10.2.1",
-    "vue-template-compiler": "^2.6.11"
   }
 }
