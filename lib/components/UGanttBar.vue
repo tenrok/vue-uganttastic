@@ -236,7 +236,7 @@ export default {
   watch: {
     bar: {
       handler(value) {
-        this.localBars = value
+        this.localBar = value
       },
       deep: true
     }

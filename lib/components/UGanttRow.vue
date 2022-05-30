@@ -1,12 +1,11 @@
 <template>
   <div>
     <div
-      v-show="threadId === chartProps.startThreadId || bars.length > 0 || $parent.showHiddenRows === groupThreadId"
+      v-show="threadId === chartProps.startThreadId || bars.length > 0 || $parent.showHiddenRows === groupThreadId || !chartProps.hideEmptyRows"
       ref="u-gantt-row"
       class="u-gantt-row"
       :style="{ height: `${chartProps.rowHeight}px` }"
       v-on="$attrs"
-      @refresh-rows="onWindowResize()"
     >
       <div class="u-gantt-row__label" :style="rowLabelStyle">
         <span :title="label">
@@ -102,13 +101,12 @@ export default {
     bars: {
       handler(value) {
         this.localBars = value
-      }
-      //deep: true
+      },
+      deep: true
     },
     localBars: {
-      handler(value) {
-        this.localBars = value
-        console.log(this.localBars)
+      handler() {
+        this.localBars = this.bars
       },
       deep: true
     }

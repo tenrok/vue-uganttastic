@@ -4,9 +4,9 @@
       <u-gantt-timeaxis v-if="!hideTimeaxis" :all-units="allUnits" :axis="axis" :grid-size="gridSize" :row-label-width="rowLabelWidth" :timemarker-offset="timemarkerOffset" />
       <div class="u-gantt-rows-container" :style="{ width: `${rowLabelWidth + allUnits.length * gridSize}px` }">
         <u-gantt-grid v-if="grid" :all-units="allUnits" :axis="axis" :grid-size="gridSize" :highlighted="highlighted" :row-label-width="rowLabelWidth" />
-        <UGanttRow
+        <u-gantt-row
           ref="u-gantt-rows"
-          v-for="(row, idx) in rows"
+          v-for="(row, idx) in localRows"
           :key="`u-gantt-row-${idx}`"
           :bars="row.bars"
           :highlight-on-hover="highlightOnHover"
@@ -19,7 +19,7 @@
           <template #bar-label="{ bar }">
             <span>{{ bar.label }}</span>
           </template>
-        </UGanttRow>
+        </u-gantt-row>
       </div>
     </div>
   </div>
@@ -29,13 +29,15 @@
 import UGanttTimeaxis from './UGanttTimeaxis.vue'
 import UGanttGrid from './UGanttGrid.vue'
 import UGanttBar from './UGanttBar.vue'
+import UGanttRow from './UGanttRow.vue'
 
 export default {
   name: 'UGanttChart',
 
   components: {
     UGanttTimeaxis,
-    UGanttGrid
+    UGanttGrid,
+    UGanttRow
   },
 
   props: {
@@ -51,6 +53,7 @@ export default {
     globalBundles: { type: String, default: 'fixed' },
     height: { type: String, default: '100%' },
     hideTimeaxis: { type: Boolean, default: false },
+    hideEmptyRows: { type: Boolean, default: true },
     highlightOnHover: { type: Boolean },
     highlighted: { type: Array, default: () => [] },
     isMagnetic: { type: Boolean },
@@ -67,12 +70,15 @@ export default {
     width: { type: String, default: '100%' } // the total width of the entire ganttastic component in %
   },
 
-  data: () => ({
-    movedBarsInDrag: new Set(),
-    timemarkerOffset: 0,
-    rowOffset: 0,
-    showHiddenRows: null
-  }),
+  data() {
+    return {
+      movedBarsInDrag: new Set(),
+      timemarkerOffset: 0,
+      rowOffset: 0,
+      showHiddenRows: null,
+      localRows: this.rows
+    }
+  },
 
   updated() {
     this.onScroll()
@@ -80,7 +86,13 @@ export default {
   activated() {
     this.onScroll()
   },
-
+  watch: {
+    rows: {
+      handler(value) {
+        this.localRows = value
+      }
+    }
+  },
   computed: {
     allUnits() {
       const res = []
@@ -157,7 +169,7 @@ export default {
         }
       } else if (isFixed) {
         const confirmBarsRowMoving = Array.from(this.movedBarsInDrag.values()).every(bar => {
-          const barParent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(elbar => elbar.localBar === bar.localBar))
+          const barParent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(elbar => elbar.localBar === bar))
           const barNewRowIndex = ganttRowChildrenList.findIndex(el => el === barParent) + this.rowOffset
           return barNewRowIndex < ganttRowChildrenList.length && barNewRowIndex >= 0 && barParent.groupThreadId === ganttRowChildrenList[barNewRowIndex].groupThreadId
         })
@@ -299,25 +311,19 @@ export default {
     },
 
     invokeBarTransition(gGanttBar, ganttRowChildrenList, parent) {
-      console.log(gGanttBar, ganttRowChildrenList, parent, this.rowOffset)
       // bar to move, row-array, bar-parent; new-row computes by this.rowOffset
       const newRowIndex = ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset
       if (ganttRowChildrenList[newRowIndex] === parent) {
         return
       }
-      console.log(parent.localBars)
-      parent.localBars.sort(function comp(a, b) {
-        if (a === gGanttBar.localBar) {
-          console.log('bingo!')
-          return 1
-        } else if (b === gGanttBar.localBar) return -1
-        else return 0
-      })
-      parent.localBars.pop()
+      parent.localBars.splice(
+        parent.localBars.findIndex(el => el === gGanttBar.localBar),
+        1
+      )
+
       ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar.localBar)
       ganttRowChildrenList[newRowIndex].localBars.sort((first, second) => this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey]))
       gGanttBar.newRowThreadId = ganttRowChildrenList[newRowIndex].threadId
-      console.log(parent, ganttRowChildrenList[newRowIndex])
     },
 
     invokeFixedBundleBarsTransition(gGanttBundle, ganttRowChildrenList) {
@@ -463,7 +469,6 @@ export default {
      *
      */
     textToGlob(text) {
-      if (!text) return
       let [groupKey, index] = text.split(',')
       const num = parseFloat(index)
       const integ = Math.trunc(num)
@@ -485,7 +490,6 @@ export default {
      *
      */
     globToText(glob, edge) {
-      if (!glob) return
       const integ = Math.trunc(glob)
       const fract = glob % 1
       let unit, index

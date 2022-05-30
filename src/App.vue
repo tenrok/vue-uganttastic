@@ -14,8 +14,10 @@
       :grid="grid"
       :grid-size="gridSize"
       :highlighted="highlighted"
+      :highlight-on-hover="highlightOnHover"
       :is-magnetic="isMagnetic"
       :height="height"
+      :hide-empty-rows="hideEmptyRows"
       :hide-timeaxis="hideTimeaxis"
       :push-on-overlap="pushOnOverlap"
       :row-height="rowHeight"
@@ -76,6 +78,7 @@ export default {
     isMagnetic: true,
     height: '50vh',
     hideTimeaxis: false,
+    hideEmptyRows: true,
     highlightOnHover: true,
     highlighted: [0],
     pushOnOverlap: false,

@@ -1,6 +1,6 @@
 {
   "name": "@tenrok/vue-uganttastic",
-  "version": "0.1.4",
+  "version": "0.3.0",
   "private": false,
   "description": "A simple and customizable Gantt chart component for Vue.js based on Vue-Ganttastic",
   "author": {
