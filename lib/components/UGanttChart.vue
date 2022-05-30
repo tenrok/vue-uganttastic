@@ -275,12 +275,11 @@ export default {
       if (ganttRowChildrenList[newRowIndex] === parent) {
         return
       }
-      parent.localBars.sort(function comp(a, b) {
-        if (a === gGanttBar.localBar) return 1
-        else if (b === gGanttBar.localBar) return -1
-        else return 0
-      })
-      parent.localBars.pop()
+      parent.localBars.splice(
+        parent.localBars.findIndex(el => el === gGanttBar.localBar),
+        1
+      )
+
       ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar.localBar)
       ganttRowChildrenList[newRowIndex].localBars.sort((first, second) => this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey]))
       gGanttBar.newRowThreadId = ganttRowChildrenList[newRowIndex].threadId
@@ -290,12 +289,10 @@ export default {
       // moving fixed bars alltogether to avoid bug with incorrect work
       gGanttBundle.forEach(gGanttBar => {
         const parent = gGanttBar.$parent
-        parent.localBars.sort(function comp(a, b) {
-          if (a === gGanttBar.localBar) return 1
-          else if (b === gGanttBar.localBar) return -1
-          else return 0
-        })
-        parent.localBars.pop()
+        parent.localBars.splice(
+          parent.localBars.findIndex(el => el === gGanttBar.localBar),
+          1
+        )
       })
       gGanttBundle.forEach(gGanttBar => {
         const parent = gGanttBar.$parent
