@@ -2,10 +2,11 @@
   <div>
     <div
       v-show="threadId === chartProps.startThreadId || bars.length > 0 || $parent.showHiddenRows === groupThreadId"
-      ref="UGanttRows"
+      ref="u-gantt-row"
       class="u-gantt-row"
       :style="{ height: `${chartProps.rowHeight}px` }"
       v-on="$attrs"
+      @refresh-rows="onWindowResize()"
     >
       <div class="u-gantt-row__label" :style="rowLabelStyle">
         <span :title="label">
@@ -22,7 +23,7 @@
         @mouseleave="onMouseLeave()"
         @mouseout="onMouseOut($event)"
       >
-        <u-gantt-bar v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
+        <u-gantt-bar ref="u-gantt-bars" v-for="(bar, index) in localBars" :key="`bar-${index}`" :all-bars-in-row="localBars" :bar="bar" :bars-container="barsContainer">
           <template #bar-label="{ bar }">
             <slot name="bar-label" :bar="bar" />
           </template>
@@ -34,7 +35,6 @@
 
 <script>
 import UGanttBar from './UGanttBar.vue'
-
 export default {
   name: 'UGanttRow',
 
@@ -102,6 +102,13 @@ export default {
     bars: {
       handler(value) {
         this.localBars = value
+      }
+      //deep: true
+    },
+    localBars: {
+      handler(value) {
+        this.localBars = value
+        console.log(this.localBars)
       },
       deep: true
     }

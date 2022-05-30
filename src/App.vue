@@ -20,27 +20,12 @@
       :push-on-overlap="pushOnOverlap"
       :row-height="rowHeight"
       :row-label-width="rowLabelWidth"
+      :rows="rows"
       :start-thread-id="startThreadId"
       snap-back-on-overlap
       :theme="theme"
       @dragend-bar="onDragend($event)"
-    >
-      <u-gantt-row
-        v-for="(row, idx) in rows"
-        :key="`u-gantt-row-${idx}`"
-        :bars="row.bars"
-        :highlight-on-hover="highlightOnHover"
-        :label="row.label"
-        :label-style="row.labelStyle"
-        :row-style="row.style"
-        :groupThreadId="row.groupThreadId"
-        :threadId="row.threadId"
-      >
-        <template #bar-label="{ bar }">
-          <span>{{ bar.label }}</span>
-        </template>
-      </u-gantt-row>
-    </u-gantt-chart>
+    />
   </div>
 </template>
 

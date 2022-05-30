@@ -4,7 +4,22 @@
       <u-gantt-timeaxis v-if="!hideTimeaxis" :all-units="allUnits" :axis="axis" :grid-size="gridSize" :row-label-width="rowLabelWidth" :timemarker-offset="timemarkerOffset" />
       <div class="u-gantt-rows-container" :style="{ width: `${rowLabelWidth + allUnits.length * gridSize}px` }">
         <u-gantt-grid v-if="grid" :all-units="allUnits" :axis="axis" :grid-size="gridSize" :highlighted="highlighted" :row-label-width="rowLabelWidth" />
-        <slot />
+        <UGanttRow
+          ref="u-gantt-rows"
+          v-for="(row, idx) in rows"
+          :key="`u-gantt-row-${idx}`"
+          :bars="row.bars"
+          :highlight-on-hover="highlightOnHover"
+          :label="row.label"
+          :label-style="row.labelStyle"
+          :row-style="row.style"
+          :groupThreadId="row.groupThreadId"
+          :threadId="row.threadId"
+        >
+          <template #bar-label="{ bar }">
+            <span>{{ bar.label }}</span>
+          </template>
+        </UGanttRow>
       </div>
     </div>
   </div>
@@ -13,7 +28,6 @@
 <script>
 import UGanttTimeaxis from './UGanttTimeaxis.vue'
 import UGanttGrid from './UGanttGrid.vue'
-import UGanttRow from './UGanttRow.vue'
 import UGanttBar from './UGanttBar.vue'
 
 export default {
@@ -37,6 +51,7 @@ export default {
     globalBundles: { type: String, default: 'fixed' },
     height: { type: String, default: '100%' },
     hideTimeaxis: { type: Boolean, default: false },
+    highlightOnHover: { type: Boolean },
     highlighted: { type: Array, default: () => [] },
     isMagnetic: { type: Boolean },
     minGapBetweenBars: { type: Number, default: 0 },
@@ -44,6 +59,7 @@ export default {
     pushOnOverlap: { type: Boolean },
     rowHeight: { type: Number, default: 40 },
     rowLabelWidth: { type: Number, default: 200 },
+    rows: { type: Array, default: () => [] },
     startThreadId: { type: String, default: '1' },
     snapBackOnOverlap: { type: Boolean },
     theme: { type: String, default: 'default' },
@@ -84,8 +100,11 @@ export default {
 
   methods: {
     onScroll() {
-      console.log(this.$root.$refs.UGanttRows)
-      this.$root.$refs.UGanttRows.forEach(row => row.onWindowResize())
+      this.$refs['u-gantt-rows'].forEach(row => row.onWindowResize())
+      // this.$slots
+      //   .default()[0]
+      //   .children.filter(childComp => childComp.type.name === UGanttRow.name)
+      //   .forEach(row => row.type.methods.onWindowResize())
       // It is necessary for avoiding bug with disposition cursor and moving bar
     },
 
@@ -108,10 +127,12 @@ export default {
             break
         }
       }
-
+      // console.log(gGanttBar)
+      //console.log(this.$refs['u-gantt-rows'][0].bars)
       // bundleRelation type defining
-      const parent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === gGanttBar.localBar).$parent
-      const ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
+      const parent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(bar => bar === gGanttBar))
+      const ganttRowChildrenList = this.$refs['u-gantt-rows']
+      //console.log(ganttRowChildrenList)
       this.rowOffset = 0
       const selectedRow = ganttRowChildrenList.find(el => {
         const rect = el.$refs['u-gantt-row'].getBoundingClientRect()
@@ -123,16 +144,20 @@ export default {
       if (!selectedRow) return 'not-allowed'
 
       this.rowOffset = ganttRowChildrenList.findIndex(el => el === selectedRow) - ganttRowChildrenList.findIndex(el => el === parent)
-
+      // console.log(this.rowOffset)
       // computing common row offset
       if (isFixed === undefined) {
         const barNewRowIndex = ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset
+        // console.log(barNewRowIndex)
+        // console.log(ganttRowChildrenList.length)
+        // console.log(selectedRow.groupThreadId)
+        // console.log(parent.groupThreadId)
         if (barNewRowIndex < ganttRowChildrenList.length && barNewRowIndex >= 0 && selectedRow.groupThreadId === parent.groupThreadId) {
           return 'grabbing'
         }
       } else if (isFixed) {
         const confirmBarsRowMoving = Array.from(this.movedBarsInDrag.values()).every(bar => {
-          const barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bar).$parent
+          const barParent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(elbar => elbar.localBar === bar.localBar))
           const barNewRowIndex = ganttRowChildrenList.findIndex(el => el === barParent) + this.rowOffset
           return barNewRowIndex < ganttRowChildrenList.length && barNewRowIndex >= 0 && barParent.groupThreadId === ganttRowChildrenList[barNewRowIndex].groupThreadId
         })
@@ -142,7 +167,7 @@ export default {
         // approving value if fixed
       } else {
         const confirmBarsRowMoving = Array.from(this.movedBarsInDrag).every(bar => {
-          const barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bar).$parent
+          const barParent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(elbar => elbar.localBar === bar))
           return barParent !== selectedRow || barParent === parent
         })
         if (confirmBarsRowMoving && selectedRow.groupThreadId === parent.groupThreadId) {
@@ -173,8 +198,8 @@ export default {
       }
 
       // bundleRelation type defining
-      const parent = this.getGanttBarChildrenList().find(childComp => childComp === gGanttBar).$parent
-      const ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
+      const parent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(bar => bar === gGanttBar))
+      const ganttRowChildrenList = this.$refs['u-gantt-rows']
       this.rowOffset = 0
       const selectedRow = ganttRowChildrenList.find(el => {
         const rect = el.$refs['u-gantt-row'].getBoundingClientRect()
@@ -201,8 +226,11 @@ export default {
         ) {
           gGanttBar.bar[this.barStartKey] = this.globToText(gGanttBar.phantomNewStart)
           gGanttBar.bar[this.barEndKey] = this.globToText(gGanttBar.phantomNewEnd)
+          //console.log(this.globToText(gGanttBar.phantomNewStart))
+          //console.log(gGanttBar.bar[this.barEndKey])
           this.magnetize(gGanttBar)
           if (gGanttBar.getOverlapBarAndType(gGanttBar.localBar, ganttRowChildrenList[barNewRowIndex].localBars).overlapBar === undefined || gGanttBar.barConfig.pushOnOverlap === false) {
+            //console.log(gGanttBar, ganttRowChildrenList, parent)
             this.invokeBarTransition(gGanttBar, ganttRowChildrenList, parent)
             return
           } else {
@@ -221,7 +249,7 @@ export default {
 
         const confirmBarsRowMoving =
           gGanttBar.bundleBars.every(bundleBar => {
-            const barParent = this.getGanttBarChildrenList().find(childComp => childComp.localBar === bundleBar.localBar).$parent
+            const barParent = this.$refs['u-gantt-rows'].find(row => row.$refs['u-gantt-bars'] && row.$refs['u-gantt-bars'].some(elbar => elbar.localBar === bundleBar.localBar))
             const barNewRowIndex = ganttRowChildrenList.findIndex(el => el === barParent) + this.rowOffset
             this.magnetize(bundleBar)
             return (
@@ -271,20 +299,25 @@ export default {
     },
 
     invokeBarTransition(gGanttBar, ganttRowChildrenList, parent) {
+      console.log(gGanttBar, ganttRowChildrenList, parent, this.rowOffset)
       // bar to move, row-array, bar-parent; new-row computes by this.rowOffset
       const newRowIndex = ganttRowChildrenList.findIndex(el => el === parent) + this.rowOffset
       if (ganttRowChildrenList[newRowIndex] === parent) {
         return
       }
+      console.log(parent.localBars)
       parent.localBars.sort(function comp(a, b) {
-        if (a === gGanttBar.localBar) return 1
-        else if (b === gGanttBar.localBar) return -1
+        if (a === gGanttBar.localBar) {
+          console.log('bingo!')
+          return 1
+        } else if (b === gGanttBar.localBar) return -1
         else return 0
       })
       parent.localBars.pop()
       ganttRowChildrenList[newRowIndex].localBars.push(gGanttBar.localBar)
       ganttRowChildrenList[newRowIndex].localBars.sort((first, second) => this.textToGlob(first[this.barStartKey]) - this.textToGlob(second[this.barStartKey]))
       gGanttBar.newRowThreadId = ganttRowChildrenList[newRowIndex].threadId
+      console.log(parent, ganttRowChildrenList[newRowIndex])
     },
 
     invokeFixedBundleBarsTransition(gGanttBundle, ganttRowChildrenList) {
@@ -308,10 +341,10 @@ export default {
 
     getGanttBarChildrenList() {
       const ganttBarChildren = []
-      const ganttRowChildrenList = this.$children.filter(childComp => childComp.$options.name === UGanttRow.name)
+      const ganttRowChildrenList = this.$refs['u-gantt-rows']
       ganttRowChildrenList.forEach(row => {
-        let ganttBarChildrenOfRow = row.$children.filter(childComp => childComp.$options.name === UGanttBar.name)
-        ganttBarChildren.push(...ganttBarChildrenOfRow)
+        let ganttBarChildrenOfRow = row.$refs['u-gantt-bars']
+        ganttBarChildrenOfRow && ganttBarChildren.push(...ganttBarChildrenOfRow)
       })
       return ganttBarChildren
     },
@@ -330,6 +363,7 @@ export default {
       this.movedBarsInDrag.add(gGanttBar.bar)
       bundle.push(gGanttBar)
       if (gGanttBar.barConfig.bundle) {
+        //console.log(this.getGanttBarChildrenList())
         this.getGanttBarChildrenList().forEach(ganttBarChild => {
           if (ganttBarChild.barConfig.bundle === gGanttBar.barConfig.bundle && ganttBarChild !== gGanttBar) {
             ganttBarChild.initDrag(e)
@@ -429,6 +463,7 @@ export default {
      *
      */
     textToGlob(text) {
+      if (!text) return
       let [groupKey, index] = text.split(',')
       const num = parseFloat(index)
       const integ = Math.trunc(num)
@@ -450,6 +485,7 @@ export default {
      *
      */
     globToText(glob, edge) {
+      if (!glob) return
       const integ = Math.trunc(glob)
       const fract = glob % 1
       let unit, index
